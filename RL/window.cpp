@@ -1,4 +1,5 @@
 #include "window.h"
+#include <SDL_ttf.h>
 
 Window::Window(const std::string& title, int width, int height) :
 	_title(title), _width(width), _height(height) {
@@ -67,6 +68,8 @@ void Window::doEventInput() {
 			break;
 		}
 	}
+	if (_pressedKeys[SDL_SCANCODE_ESCAPE])
+		_closed = true;
 }
 
 void Window::resetInput() {
