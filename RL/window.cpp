@@ -1,4 +1,5 @@
 #include "window.h"
+#include <SDL_image.h>
 #include <SDL_ttf.h>
 
 Window::Window(const std::string& title, int width, int height) :
@@ -12,6 +13,7 @@ Window::Window(const std::string& title, int width, int height) :
 Window::~Window() {
 	SDL_DestroyRenderer(_renderer);
 	SDL_DestroyWindow(_window);
+	TTF_Quit();
 	SDL_Quit();
 }
 
