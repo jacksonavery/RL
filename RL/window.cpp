@@ -1,6 +1,9 @@
-#include "window.h"
-#include <SDL_image.h>
 #include <SDL_ttf.h>
+#include "globals.h"
+#include "window.h"
+
+
+SDL_Renderer *Window::renderer = nullptr;
 
 Window::Window(const std::string& title, int width, int height) :
 	_title(title), _width(width), _height(height) {
@@ -11,8 +14,9 @@ Window::Window(const std::string& title, int width, int height) :
 }
 
 Window::~Window() {
-	SDL_DestroyRenderer(_renderer);
+	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(_window);
+	//IMG_Quit();
 	TTF_Quit();
 	SDL_Quit();
 }
@@ -20,6 +24,16 @@ Window::~Window() {
 bool Window::init() {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
 		printf("Failed to init SDL:%s\n", SDL_GetError());
+		return false;
+	}
+
+	//if (IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG) {
+	//	printf("Failed to init SDL_IMAGE:%s\n", SDL_GetError());
+	//	return false;
+	//}
+
+	if (TTF_Init() == -1) {
+		printf("Failed to init SDL_ttf:%s\n", SDL_GetError());
 		return false;
 	}
 
@@ -34,21 +48,26 @@ bool Window::init() {
 		return false;
 	}
 
-	_renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
-	if (!_renderer) {
+	renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
+	if (!renderer) {
 		printf("Failed to create renderer:%s\n", SDL_GetError());
 		return false;
 	}
-	SDL_SetRenderDrawColor(_renderer, 100, 0, 100, 255);
+
+	SDL_SetRenderDrawColor(renderer, 100, 0, 100, 255);
 
 	return true;
 }
 
 void Window::gameLoop() {
+	_th = new TileHandler("fonts/PixelMplus10-Regular.ttf", globals::tileSize);
+
 	while (!_closed) {
 		doEventInput();
 		draw();
 	}
+
+	delete _th;
 }
 
 void Window::doEventInput() {
@@ -89,6 +108,7 @@ void Window::handleKeyRelease(const SDL_Event& ev) {
 }
 
 void Window::draw() {
-	SDL_RenderClear(_renderer);
-	SDL_RenderPresent(_renderer);
+	SDL_RenderClear(renderer);
+	_th->draw(20, 20);
+	SDL_RenderPresent(renderer);
 }

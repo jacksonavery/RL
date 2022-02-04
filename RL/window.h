@@ -3,12 +3,14 @@
 #include <string>
 #include <iostream>
 #include <map>
+#include "tileHandler.h"
 
 class Window {
 public:
 	Window(const std::string& Title, int width, int height);
 	~Window();
 
+	static SDL_Renderer* renderer;
 private:
 	bool init();
 
@@ -26,9 +28,10 @@ private:
 	bool _closed = false;
 
 	SDL_Window* _window = nullptr;
-	SDL_Renderer* _renderer = nullptr;
 
 	std::map<SDL_Scancode, bool> _pressedKeys;
 	std::map<SDL_Scancode, bool> _heldKeys;
 	std::map<SDL_Scancode, bool> _releasedKeys;
+
+	TileHandler* _th;
 };
