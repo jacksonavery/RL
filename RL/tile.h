@@ -3,10 +3,9 @@
 
 class Tile {
 public:
-	Tile(int x, int y, int w, int h, int r, int g, int b, int a);
+	Tile();
+	Tile(Uint16 character, SDL_Color fgcolor, SDL_Color bgcolor);
 
-	void draw() const;
-private:
-	int _x, _y, _w, _h, _r, _g, _b, _a;
-	Uint16 _char[2];
+	SDL_Color fgcolor, bgcolor;
+	Uint16 character;
 };

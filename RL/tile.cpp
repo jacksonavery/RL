@@ -1,9 +1,9 @@
 #include "tile.h"
 
-Tile::Tile(int x, int y, int w, int h, int r, int g, int b, int a) {
-
+Tile::Tile() {
+	fgcolor = SDL_Color{ 255, 255, 255, 255 };
+	bgcolor = SDL_Color{ 0, 0, 0, 255 };
+	character = (Uint16) u'ÉP';
 }
-
-void Tile::draw() const {
-
-}
+Tile::Tile(Uint16 character, SDL_Color fgcolor, SDL_Color bgcolor) :
+	fgcolor(fgcolor), bgcolor(bgcolor), character(character) {}

@@ -54,13 +54,13 @@ bool Window::init() {
 		return false;
 	}
 
-	SDL_SetRenderDrawColor(renderer, 100, 0, 100, 255);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
 	return true;
 }
 
 void Window::gameLoop() {
-	_th = new TileHandler("fonts/PixelMplus10-Regular.ttf", globals::tileSize);
+	_th = new TileHandler(globals::font, globals::tileSize);
 
 	while (!_closed) {
 		doEventInput();
@@ -109,6 +109,6 @@ void Window::handleKeyRelease(const SDL_Event& ev) {
 
 void Window::draw() {
 	SDL_RenderClear(renderer);
-	_th->draw(20, 20);
+	_th->draw();
 	SDL_RenderPresent(renderer);
 }

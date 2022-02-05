@@ -4,16 +4,21 @@
 
 TileHandler::TileHandler(const std::string fontPath, int fontSize) {
 	_font = loadFont(fontPath, fontSize);
-
-	_textTexture = loadTextTexture((Uint16*)L"‚ ");
-	SDL_QueryTexture(_textTexture, 0, 0, &_textRect.w, &_textRect.h);
 }
 
-void TileHandler::draw(int x, int y) {
-	_textRect.x = x;
-	_textRect.y = y;
-	SDL_RenderCopy(Window::renderer, _textTexture, 0, &_textRect);
-
+void TileHandler::draw() {
+	//_textRect.w = globals::tileSize;
+	//_textRect.h = globals::tileSize;
+	for (int i = 0; i < globals::tWidth; i++) {
+		for (int j = 0; j < globals::tHeight; j++) {
+			auto spriteptr = getSprite(_tiles[i][j].character);
+			_textRect.x = i * globals::tileSize;
+			_textRect.y = j * globals::tileSize;
+			SDL_QueryTexture(spriteptr, 0, 0, &_textRect.w, &_textRect.h);
+			SDL_SetTextureColorMod(spriteptr, _tiles[i][j].fgcolor.r, _tiles[i][j].fgcolor.g, _tiles[i][j].fgcolor.b);
+			SDL_RenderCopy(Window::renderer, spriteptr, 0, &_textRect);
+		}
+	}
 }
 
 TTF_Font* TileHandler::loadFont(const std::string fontPath, int fontSize) {
@@ -23,8 +28,8 @@ TTF_Font* TileHandler::loadFont(const std::string fontPath, int fontSize) {
 	return font;
 }
 
-SDL_Texture* TileHandler::loadTextTexture(Uint16* character) {
-	auto textSurface = TTF_RenderUNICODE_Solid(_font, character, SDL_Color{255, 255, 255, 255});
+SDL_Texture* TileHandler::loadTextTexture(Uint16 character) {
+	auto textSurface = TTF_RenderUNICODE_Blended(_font, &character, SDL_Color{255, 255, 255, 255});
 	if (!textSurface)
 		printf("Failed to load create text surface:%s\n", SDL_GetError());
 
@@ -33,5 +38,15 @@ SDL_Texture* TileHandler::loadTextTexture(Uint16* character) {
 		printf("Failed to load create texture from text surface:%s\n", SDL_GetError());
 
 	SDL_FreeSurface(textSurface);
+
+	_spriteSheet[character] = textTexture;
 	return textTexture;
+}
+
+SDL_Texture* TileHandler::getSprite(Uint16 character) {
+	//std::cout << character << std::endl;
+	if (_spriteSheet.count(character) == 0) {
+		return loadTextTexture(character);
+	}
+	return _spriteSheet[character];
 }
