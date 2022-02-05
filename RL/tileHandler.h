@@ -12,9 +12,14 @@ public:
 	//def need a destructor to clear the spritesheet
 	void draw();
 	
+	//loads a sprite if it's hasnt been loaded yet. then returns a pointer to it
 	SDL_Texture* getSprite(Uint16 character);
+	//breaks a string down into the world
+	void drawString(Uint16* string, int x, int y, int w = 0, int h = 0, bool smartWordCut = false);
 private:
+	//loads a font and sets it
 	static TTF_Font* loadFont(const std::string fontPath, int fontSize);
+	//actually loads the sprite texture
 	SDL_Texture* loadTextTexture(Uint16 character);
 
 	Tile _tiles[globals::tWidth][globals::tHeight];
