@@ -334,4 +334,5 @@ ASALocalRun/
 .localhistory/
 
 #don't publish other people's libraries
-deps/
+deps/include/
+deps/lib/
