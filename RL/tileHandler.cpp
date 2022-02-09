@@ -13,7 +13,7 @@ void TileHandler::draw() {
 		for (int j = 0; j < globals::tHeight; j++) {
 			auto spriteptr = getSprite(_tiles[i][j].character);
 			SDL_QueryTexture(spriteptr, 0, 0, &_textRect.w, &_textRect.h);
-			_textRect.x = i * globals::tileSize + (globals::tWidth - _textRect.w) / 2 ;
+			_textRect.x = i * globals::tileSize; //(i-1) ~~ + (globals::tWidth - _textRect.w) / 2 ;
 			_textRect.y = j * globals::tileSize;
 			SDL_SetTextureColorMod(spriteptr, _tiles[i][j].fgcolor.r, _tiles[i][j].fgcolor.g, _tiles[i][j].fgcolor.b);
 			SDL_RenderCopy(Window::renderer, spriteptr, 0, &_textRect);
@@ -51,7 +51,7 @@ SDL_Texture* TileHandler::getSprite(Uint16 character) {
 	return _spriteSheet[character];
 }
 
-void TileHandler::drawString(Uint16* string, int x, int y, int w, int h, bool smartWordCut) {
+void TileHandler::drawString(const char16_t* string, int x, int y, int w, int h, bool smartWordCut) {
 	//i is the index of the string, posi is the index in physical space
 	int i = 0;
 	int posi = 0;
@@ -72,11 +72,18 @@ void TileHandler::drawString(Uint16* string, int x, int y, int w, int h, bool sm
 				posi++;
 				continue;
 			}
-			currtile->character = 0x2014;
+			currtile->character = u'-'; //0x2014;
 			posi++;
 			continue;
 		}
+		//don't start a line with a space
 		if (posi % w == 0 && string[i] == u' ') {
+			i++;
+			continue;
+		}
+		//respect '\n's
+		if (string[i] == u'\n') {
+			posi = (posi / w) * w + w;
 			i++;
 			continue;
 		}
