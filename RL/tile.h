@@ -1,8 +1,7 @@
 #pragma once
 #include <SDL_ttf.h>
 
-class Tile {
-public:
+struct Tile {
 	Tile();
 	Tile(Uint16 character, SDL_Color fgcolor, SDL_Color bgcolor);
 
