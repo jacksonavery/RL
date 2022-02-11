@@ -20,6 +20,7 @@ public:
 	//breaks a string down into the world
 	//static void makeString(const char16_t* string, Tile* destTileSet, int x = 0, int y = 0, int w = 0, int h = 0, bool smartWordCut = false);
 	static void makeStringNaive(const char16_t* string, Tile* destTileSet, int x, int y, int w, int h, int textw, int texth);
+	//fills a layer with a box **EXPECTS TO FILL THE WHOLE LAYER, WILL NOT FUNCTION CORRECTLY OTHERWISE**
 	static void makeBoundingBox(Tile* destTileSet, int x, int y, int w, int h);
 private:
 	//loads a font and sets it
