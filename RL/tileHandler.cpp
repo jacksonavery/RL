@@ -7,7 +7,7 @@
 TileHandler::TileHandler(const std::string fontPath, int fontSize) {
 	_font = loadFont(fontPath, fontSize);
 
-	TextBox* tb = new TextBox(u"message in the box tho? he do be displaying characters", 10, 10, 16, 8);
+	TextBox* tb = new TextBox(u"飲食店では今回の動画で検証した効果を使って\n回転率を上げるために短い時間で満足感が得られる赤色を\n内装に使っていることがあるそうです！\n本当かどうかは知らんけど", 1, globals::tHeight-9, globals::tWidth-2, 8);
 	_popups.push_back(tb);
 }
 
@@ -130,4 +130,27 @@ void TileHandler::makeStringNaive(const char16_t* string, Tile* destTileSet, int
 		posi++;
 		i++;
 	}
+}
+
+void TileHandler::makeBoundingBox(Tile* destTileSet, int x, int y, int w, int h) {
+	//init to empty tiles
+	Tile a(u' ', SDL_Color{ 255, 255, 255, 255 }, SDL_Color{ 0, 0, 0, 255 });
+	for (int i = 0; i < w*h; i++) {
+		destTileSet[i] = a;
+	}
+	//top/bot
+	for (int i = 0; i < w; i++) {
+		destTileSet[i].character = 0x2500;
+		destTileSet[w*h - 1 - i].character = 0x2500;
+	}
+	//sides
+	for (int i = 0; i < h; i++) {
+		destTileSet[w*i].character = 0x2502;
+		destTileSet[w*(i + 1) - 1].character = 0x2502;
+	}
+	//corners
+	destTileSet[0].character = 0x250C;
+	destTileSet[w-1].character = 0x2510;
+	destTileSet[(h-1)*w].character = 0x2514;
+	destTileSet[h*w-1].character = 0x2518;
 }
