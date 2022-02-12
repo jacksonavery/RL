@@ -1,16 +1,17 @@
 #include "tileHandler.h"
 
 #include <iostream>
+#include <string>
 #include "window.h"
 #include "textbox.h"
 
 TileHandler::TileHandler(const std::string fontPath, int fontSize) {
 	_font = loadFont(fontPath, fontSize);
 
-	TextBox* tb = new TextBox(u"どんな君に逢っても... 何気ない毎日が... 戸惑うキモチは 好きの裏返しだって 風にほどける髪に シンクロする呼吸(ブレス) コイカナ...(どーかな...) アイタイナ...(恋かも...) 甘い甘い Caramel Rythm どんな君に逢っても どんな心を描いたとしても Imagination, Merry-go-round 何気ない毎日が かけがえない時間になる 歩こう so, love 憂鬱でため息な日も 恋を閉じたりしないで あの時ああしたらなんて ジレンマに降参(white-flag) 後悔も... 衝動も... 曖昧で... アイタクテ... 回る回る Raspberry Magic みんな君を待ってる みんな心に願い抱いてる Immeasurably, Illumination 何気ない毎日が キラキラ輝きますように 祈るよ 空へ どんなTime capsuleも キミの心を変えられはしない 大丈夫 迷わないで 何気ない毎日が かけがいない記憶になる 歩こう so, love", 1, globals::tHeight-9, globals::tWidth-2, 8);
-	TextBox* tb2 = new TextBox(u"申し訳ございませんが、友達がないみたいですうぅuuu", 2, 2);
-	_popups.push_back(tb);
-	_popups.push_back(tb2);
+	//TextBox* tb = new TextBox(u"どんな君に逢っても... 何気ない毎日が... 戸惑うキモチは 好きの裏返しだって 風にほどける髪に シンクロする呼吸(ブレス) コイカナ...(どーかな...) アイタイナ...(恋かも...) 甘い甘い Caramel Rythm どんな君に逢っても どんな心を描いたとしても Imagination, Merry-go-round 何気ない毎日が かけがえない時間になる 歩こう so, love 憂鬱でため息な日も 恋を閉じたりしないで あの時ああしたらなんて ジレンマに降参(white-flag) 後悔も... 衝動も... 曖昧で... アイタクテ... 回る回る Raspberry Magic みんな君を待ってる みんな心に願い抱いてる Immeasurably, Illumination 何気ない毎日が キラキラ輝きますように 祈るよ 空へ どんなTime capsuleも キミの心を変えられはしない 大丈夫 迷わないで 何気ない毎日が かけがいない記憶になる 歩こう so, love", 1, globals::tHeight-9, globals::tWidth-2, 8);
+	//TextBox* tb2 = new TextBox(u"申し訳ございませんが、友達がないみたいですうぅuuu", 2, 2);
+	//_popups.push_back(tb);
+	//_popups.push_back(tb2);
 
 	//init tileset
 	initTileSetTiles(&_bgTiles, globals::tWidth, globals::tHeight);
@@ -18,6 +19,10 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize) {
 
 TileHandler::~TileHandler() {
 	//yeah
+}
+
+void TileHandler::update(int elapsedTime) {
+	
 }
 
 void TileHandler::draw() {

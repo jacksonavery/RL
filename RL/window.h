@@ -19,6 +19,7 @@ private:
 	void resetInput();
 	void handleKeyPress(const SDL_Event& ev);
 	void handleKeyRelease(const SDL_Event& ev);
+	void update(int elapsedTime);
 	void draw();
 
 	std::string _title = "window";

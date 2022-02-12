@@ -12,6 +12,9 @@ class TileHandler {
 public:
 	TileHandler(const std::string fontPath, int fontSize);
 	~TileHandler();
+
+	//updater
+	void update(int elapsedTime);
 	//calls all draws
 	void draw();
 	

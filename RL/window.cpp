@@ -1,7 +1,8 @@
-#include <SDL_ttf.h>
-#include "globals.h"
 #include "window.h"
 
+#include <algorithm>
+#include <SDL_ttf.h>
+#include "globals.h"
 
 SDL_Renderer *Window::renderer = nullptr;
 
@@ -60,8 +61,17 @@ bool Window::init() {
 void Window::gameLoop() {
 	_th = new TileHandler(globals::font, globals::tileSize);
 
+	int LAST_UPDATE_TIME = SDL_GetTicks();
+
 	while (!_closed) {
 		doEventInput();
+
+		//framerate cap
+		const int CURR_TIME_MS = SDL_GetTicks();
+		int ELAPSED_TIME_MS = CURR_TIME_MS - LAST_UPDATE_TIME;
+		update(std::min(ELAPSED_TIME_MS, globals::MAX_FRAME_TIME));
+		LAST_UPDATE_TIME = CURR_TIME_MS;
+
 		draw();
 	}
 
@@ -109,4 +119,8 @@ void Window::draw() {
 	SDL_RenderClear(renderer);
 	_th->draw();
 	SDL_RenderPresent(renderer);
+}
+
+void Window::update(int elapsedTime) {
+	_th->update(elapsedTime);
 }
