@@ -35,14 +35,18 @@ private:
 	//draws an actual set of tiles
 	void drawTileSet(std::vector<std::vector<Tile>>* tileset, int x = 0, int y = 0);
 
+	//update camera pos
+	void doCameraMovement(int elapsedTime);
+
 	std::vector<std::vector<Tile>> _bgTiles;
 	std::vector<Popup*> _popups;
-	//int _w = globals::tWidth, _h = globals::tHeight;
+
 	TTF_Font* _font;
 	SDL_Rect _textRect;
 	std::map<Uint16, SDL_Texture*> _spriteSheet;
 
 	Input* _input;
 
-	int camerax, cameray;
+	int _camerax, _cameray;
+	int _timeSinceLastCameraUpdate;
 };

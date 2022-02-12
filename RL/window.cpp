@@ -67,7 +67,7 @@ void Window::gameLoop() {
 	while (!_closed) {
 		_closed = _input->doEventInput();
 
-		//framerate cap
+		//framerate min
 		const int CURR_TIME_MS = SDL_GetTicks();
 		int ELAPSED_TIME_MS = CURR_TIME_MS - LAST_UPDATE_TIME;
 		update(std::min(ELAPSED_TIME_MS, globals::MAX_FRAME_TIME));

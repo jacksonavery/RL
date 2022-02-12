@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 #include <SDL.h>
+#include <agents.h>
 #include "window.h"
 #include "textbox.h"
 
@@ -21,7 +22,8 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input)
 	_bgTiles.at(2).at(2).character = u'‚ ';
 
 	//init camera
-	camerax = cameray = 0;
+	_camerax = _cameray = 0;
+	_timeSinceLastCameraUpdate = 0;
 }
 
 TileHandler::~TileHandler() {
@@ -29,12 +31,20 @@ TileHandler::~TileHandler() {
 }
 
 void TileHandler::update(int elapsedTime) {
-	camerax += _input->isKeyPressed(SDL_SCANCODE_D) - _input->isKeyPressed(SDL_SCANCODE_A);
-	cameray += _input->isKeyPressed(SDL_SCANCODE_S) - _input->isKeyPressed(SDL_SCANCODE_W);
+	doCameraMovement(elapsedTime);
+}
+
+void TileHandler::doCameraMovement(int elapsedTime) {
+	_timeSinceLastCameraUpdate += elapsedTime;
+	if (_timeSinceLastCameraUpdate > globals::MOVE_DELAY) {
+		_camerax += _input->isKeyHeld(SDL_SCANCODE_D) - _input->isKeyHeld(SDL_SCANCODE_A);
+		_cameray += _input->isKeyHeld(SDL_SCANCODE_S) - _input->isKeyHeld(SDL_SCANCODE_W);
+		_timeSinceLastCameraUpdate = 0;
+	}
 }
 
 void TileHandler::draw() {
-	drawTileSet(&_bgTiles, -camerax, -cameray);
+	drawTileSet(&_bgTiles, -_camerax, -_cameray);
 	for (int i = 0; i < _popups.size(); i++) {
 		auto t = _popups.at(i);
 		drawTileSet(&t->data, t->x, t->y);
