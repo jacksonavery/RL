@@ -17,20 +17,21 @@ public:
 	
 	//loads a sprite if it's hasnt been loaded yet. then returns a pointer to it
 	SDL_Texture* getSprite(Uint16 character);
+
+	static void initTileSetTiles(std::vector<std::vector<Tile>>* destTileSet, int w, int h);
 	//breaks a string down into the world
-	//static void makeString(const char16_t* string, Tile* destTileSet, int x = 0, int y = 0, int w = 0, int h = 0, bool smartWordCut = false);
-	static void makeStringNaive(const char16_t* string, Tile* destTileSet, int x, int y, int w, int h, int textw, int texth);
+	static void makeStringNaive(const char16_t* string, std::vector<std::vector<Tile>>* destTileSet, int x, int y, int w, int h);
 	//fills a layer with a box **EXPECTS TO FILL THE WHOLE LAYER, WILL NOT FUNCTION CORRECTLY OTHERWISE**
-	static void makeBoundingBox(Tile* destTileSet, int x, int y, int w, int h);
+	static void makeBoundingBox(std::vector<std::vector<Tile>>* destTileSet, int x, int y, int w, int h);
 private:
 	//loads a font and sets it
 	static TTF_Font* loadFont(const std::string fontPath, int fontSize);
 	//actually loads the sprite texture
 	SDL_Texture* loadTextTexture(Uint16 character);
 	//draws an actual set of tiles
-	void drawTileSet(Tile* tileset, int x = 0, int y = 0, int w = globals::tWidth, int h = globals::tHeight);
+	void drawTileSet(std::vector<std::vector<Tile>>* tileset, int x = 0, int y = 0);
 
-	Tile _bgTiles[globals::tWidth*globals::tHeight];
+	std::vector<std::vector<Tile>> _bgTiles;
 	std::vector<Popup*> _popups;
 	int _w = globals::tWidth, _h = globals::tHeight;
 	TTF_Font* _font;

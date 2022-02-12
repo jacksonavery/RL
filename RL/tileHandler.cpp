@@ -7,8 +7,13 @@
 TileHandler::TileHandler(const std::string fontPath, int fontSize) {
 	_font = loadFont(fontPath, fontSize);
 
-	TextBox* tb = new TextBox(u"飲食店では今回の動画で検証した効果を使って\n回転率を上げるために短い時間で満足感が得られる赤色を\n内装に使っていることがあるそうです！\n本当かどうかは知らんけど", 1, globals::tHeight-9, globals::tWidth-2, 8);
+	TextBox* tb = new TextBox(u"どんな君に逢っても... 何気ない毎日が... 戸惑うキモチは 好きの裏返しだって 風にほどける髪に シンクロする呼吸(ブレス) コイカナ...(どーかな...) アイタイナ...(恋かも...) 甘い甘い Caramel Rythm どんな君に逢っても どんな心を描いたとしても Imagination, Merry-go-round 何気ない毎日が かけがえない時間になる 歩こう so, love 憂鬱でため息な日も 恋を閉じたりしないで あの時ああしたらなんて ジレンマに降参(white-flag) 後悔も... 衝動も... 曖昧で... アイタクテ... 回る回る Raspberry Magic みんな君を待ってる みんな心に願い抱いてる Immeasurably, Illumination 何気ない毎日が キラキラ輝きますように 祈るよ 空へ どんなTime capsuleも キミの心を変えられはしない 大丈夫 迷わないで 何気ない毎日が かけがいない記憶になる 歩こう so, love", 1, globals::tHeight-9, globals::tWidth-2, 8);
+	TextBox* tb2 = new TextBox(u"申し訳ございませんが、友達がないみたいですうぅuuu", 2, 2);
 	_popups.push_back(tb);
+	_popups.push_back(tb2);
+
+	//init tileset
+	initTileSetTiles(&_bgTiles, globals::tWidth, globals::tHeight);
 }
 
 TileHandler::~TileHandler() {
@@ -16,19 +21,22 @@ TileHandler::~TileHandler() {
 }
 
 void TileHandler::draw() {
-	drawTileSet(_bgTiles);
+	drawTileSet(&_bgTiles);
 	for (int i = 0; i < _popups.size(); i++) {
 		auto t = _popups.at(i);
-		drawTileSet(t->data, t->x, t->y, t->w, t->h);
+		drawTileSet(&t->data, t->x, t->y);
 	}
 }
 
-void TileHandler::drawTileSet(Tile* tileset, int x, int y, int w, int h) {
+void TileHandler::drawTileSet(std::vector<std::vector<Tile>>* tileset, int x, int y) {
 	SDL_SetRenderDrawColor(Window::renderer, 0, 0, 0, 255);
+	int w = tileset->size();
+	int h = tileset->at(0).size();
 	for (int j = h-1; j >= 0; j--) {
 		for (int i = 0; i < w; i++) {
-			auto spriteptr = getSprite(tileset[i + j * w].character);
-			Tile* a = &tileset[i + j * w];
+			//printf("i:%d, j:%d\n", i, j);
+			Tile* a = &tileset->at(i).at(j);
+			auto spriteptr = getSprite(a->character);
 			//bg
 							//transforms
 			_textRect.x = (x + (i % w)) * globals::tileSize;
@@ -76,6 +84,13 @@ SDL_Texture* TileHandler::getSprite(Uint16 character) {
 	return _spriteSheet[character];
 }
 
+void TileHandler::initTileSetTiles(std::vector<std::vector<Tile>>* destTileSet, int w, int h) {
+	Tile a;
+	std::vector<Tile> b;
+	b.resize(h, a);
+	destTileSet->resize(w, b);
+}
+
 //void TileHandler::makeString(const char16_t* string, Tile* destTileSet, int x, int y, int w, int h, bool smartWordCut) {
 //	//i is the index of the string, posi is the index in physical space
 //	int i = 0;
@@ -118,39 +133,38 @@ SDL_Texture* TileHandler::getSprite(Uint16 character) {
 //	}
 //}
 
-void TileHandler::makeStringNaive(const char16_t* string, Tile* destTileSet, int x, int y, int w, int h, int textw, int texth) {
+void TileHandler::makeStringNaive(const char16_t* string, std::vector<std::vector<Tile>>* destTileSet, int x, int y, int w, int h) {
 	//i is the index of the string, posi is the index in physical space
 	int i = 0;
 	int posi = 0;
 
 	while (string[i] != u'\0' && posi < w*h) {
-		//Tile* currtile = &destTileSet[(posi % w + x) + (posi / w + y) * w];
-		Tile* currtile = &destTileSet[(posi%w + x) + (posi / w + y)*textw];
+		Tile* currtile = &destTileSet->at(posi % w + x).at(posi / w + y);
 		currtile->character = string[i];
 		posi++;
 		i++;
 	}
 }
 
-void TileHandler::makeBoundingBox(Tile* destTileSet, int x, int y, int w, int h) {
+void TileHandler::makeBoundingBox(std::vector<std::vector<Tile>>* destTileSet, int x, int y, int w, int h) {
 	//init to empty tiles
 	Tile a(u' ', SDL_Color{ 255, 255, 255, 255 }, SDL_Color{ 0, 0, 0, 255 });
 	for (int i = 0; i < w*h; i++) {
-		destTileSet[i] = a;
+		destTileSet->at(i%w).at(i/w) = a;
 	}
 	//top/bot
 	for (int i = 0; i < w; i++) {
-		destTileSet[i].character = 0x2500;
-		destTileSet[w*h - 1 - i].character = 0x2500;
+		destTileSet->at(i).at(0).character = 0x2500;
+		destTileSet->at(i).at(h-1).character = 0x2500;
 	}
 	//sides
 	for (int i = 0; i < h; i++) {
-		destTileSet[w*i].character = 0x2502;
-		destTileSet[w*(i + 1) - 1].character = 0x2502;
+		destTileSet->at(0).at(i).character = 0x2502;
+		destTileSet->at(w-1).at(i).character = 0x2502;
 	}
 	//corners
-	destTileSet[0].character = 0x250C;
-	destTileSet[w-1].character = 0x2510;
-	destTileSet[(h-1)*w].character = 0x2514;
-	destTileSet[h*w-1].character = 0x2518;
+	destTileSet->at(0).at(0).character = 0x250C;
+	destTileSet->at(w-1).at(0).character = 0x2510;
+	destTileSet->at(0).at(h-1).character = 0x2514;
+	destTileSet->at(w-1).at(h-1).character = 0x2518;
 }
