@@ -48,6 +48,7 @@ private:
 
 	std::vector<std::vector<Tile>> _bgTiles;
 	std::vector<std::vector<Voxel>> _voxels;
+	std::vector<std::vector<std::vector<Voxel>>*> _elevations;
 	std::vector<Popup*> _popups;
 
 

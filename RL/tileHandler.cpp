@@ -16,7 +16,12 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input)
 	initTileSetTiles(&_bgTiles, 20, 20);
 	_bgTiles.at(2).at(2).character = u'‚ ';
 	//init voxelset
-	initVoxelSetVoxels(&_voxels, 5, 5);
+	initVoxelSetVoxels(&_voxels, 9, 7);
+	_elevations.push_back(&_voxels);
+	_elevations.push_back(&_voxels);
+	_elevations.push_back(&_voxels);
+	_elevations.push_back(&_voxels);
+	_elevations.push_back(&_voxels);
 
 	//init camera
 	_camerax = _cameray = 0;
@@ -44,7 +49,10 @@ void TileHandler::draw() {
 	//base tiles
 	drawTileSet(&_bgTiles, -_camerax, -_cameray);
 	//voxels
-	drawVoxelSet(&_voxels, -_camerax+2, -_cameray+2);
+	for (int i = 0; i < _elevations.size(); i++) {
+		drawVoxelSet(_elevations.at(i), -_camerax, -_cameray-i);
+	}
+	//drawVoxelSet(&_voxels, -_camerax+2, -_cameray+2);
 	//popups
 	for (int i = 0; i < _popups.size(); i++) {
 		auto t = _popups.at(i);
@@ -119,7 +127,7 @@ void TileHandler::drawVoxelSet(std::vector<std::vector<Voxel>>* vectorset, int x
 			Tile* a = &vectorset->at(i).at(j).sideTile;
 			if (a->character == 0)
 				continue;
-			drawSingleTile(a, x + (i % w), y + j + 1);
+			drawSingleTile(a, x + (i % w), y + j);
 
 		}
 	}
@@ -130,7 +138,7 @@ void TileHandler::drawVoxelSet(std::vector<std::vector<Voxel>>* vectorset, int x
 			Tile* a = &vectorset->at(i).at(j).topTile;
 			if (a->character == 0)
 				continue;
-			drawSingleTile(a, x + (i % w), y + j);
+			drawSingleTile(a, x + (i % w), y + j - 1);
 
 		}
 	}
