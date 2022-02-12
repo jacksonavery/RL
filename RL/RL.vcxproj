@@ -137,15 +137,18 @@
     <ClCompile Include="textbox.cpp" />
     <ClCompile Include="tile.cpp" />
     <ClCompile Include="tileHandler.cpp" />
+    <ClCompile Include="voxel.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="globals.h" />
     <ClInclude Include="input.h" />
+    <ClInclude Include="level.h" />
     <ClInclude Include="popup.h" />
     <ClInclude Include="textbox.h" />
     <ClInclude Include="tile.h" />
     <ClInclude Include="tileHandler.h" />
+    <ClInclude Include="voxel.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

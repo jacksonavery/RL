@@ -12,14 +12,11 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input)
 	_font = loadFont(fontPath, fontSize);
 	_input = input;
 
-	//TextBox* tb = new TextBox(u"どんな君に逢っても... 何気ない毎日が... 戸惑うキモチは 好きの裏返しだって 風にほどける髪に シンクロする呼吸(ブレス) コイカナ...(どーかな...) アイタイナ...(恋かも...) 甘い甘い Caramel Rythm どんな君に逢っても どんな心を描いたとしても Imagination, Merry-go-round 何気ない毎日が かけがえない時間になる 歩こう so, love 憂鬱でため息な日も 恋を閉じたりしないで あの時ああしたらなんて ジレンマに降参(white-flag) 後悔も... 衝動も... 曖昧で... アイタクテ... 回る回る Raspberry Magic みんな君を待ってる みんな心に願い抱いてる Immeasurably, Illumination 何気ない毎日が キラキラ輝きますように 祈るよ 空へ どんなTime capsuleも キミの心を変えられはしない 大丈夫 迷わないで 何気ない毎日が かけがいない記憶になる 歩こう so, love", 1, globals::tHeight-9, globals::tWidth-2, 8);
-	//TextBox* tb2 = new TextBox(u"申し訳ございませんが、友達がないみたいですうぅuuu", 2, 2);
-	//_popups.push_back(tb);
-	//_popups.push_back(tb2);
-
 	//init tileset
-	initTileSetTiles(&_bgTiles, 5, 5);
+	initTileSetTiles(&_bgTiles, 20, 20);
 	_bgTiles.at(2).at(2).character = u'あ';
+	//init voxelset
+	initVoxelSetVoxels(&_voxels, 5, 5);
 
 	//init camera
 	_camerax = _cameray = 0;
@@ -44,7 +41,11 @@ void TileHandler::doCameraMovement(int elapsedTime) {
 }
 
 void TileHandler::draw() {
+	//base tiles
 	drawTileSet(&_bgTiles, -_camerax, -_cameray);
+	//voxels
+	drawVoxelSet(&_voxels, -_camerax+2, -_cameray+2);
+	//popups
 	for (int i = 0; i < _popups.size(); i++) {
 		auto t = _popups.at(i);
 		drawTileSet(&t->data, t->x, t->y);
@@ -69,20 +70,68 @@ void TileHandler::drawTileSet(std::vector<std::vector<Tile>>* tileset, int x, in
 		for (int i = srcxoff; i < w; i++) {
 			//printf("i:%d, j:%d\n", i, j);
 			Tile* a = &tileset->at(i).at(j);
-			auto spriteptr = getSprite(a->character);
-			//bg
-							//transforms
-			_textRect.x = (x + (i % w)) * globals::tileSize;
-			_textRect.y = (y + j) * globals::tileSize;
-			_textRect.w = globals::tileSize;
-			_textRect.h = globals::tileSize;
-			SDL_SetRenderDrawColor(Window::renderer, a->bgcolor.r, a->bgcolor.g, a->bgcolor.b, a->bgcolor.a);
-			SDL_RenderFillRect(Window::renderer, &_textRect);
-			//fg
-			SDL_QueryTexture(spriteptr, 0, 0, &_textRect.w, &_textRect.h);
-			//adjust x/y pos of chars?
-			SDL_SetTextureColorMod(spriteptr, a->fgcolor.r, a->fgcolor.g, a->fgcolor.b);
-			SDL_RenderCopy(Window::renderer, spriteptr, 0, &_textRect);
+			if (a->character == 0)
+				continue;
+			drawSingleTile(a, x + (i % w), y + j);
+			
+		}
+	}
+	//reset clear color at end
+	SDL_SetRenderDrawColor(Window::renderer, 0, 0, 0, 255);
+}
+
+void TileHandler::drawSingleTile(Tile* tile, int xpos, int ypos) {
+	auto spriteptr = getSprite(tile->character);
+	//bg
+					//transforms
+	_textRect.x = (xpos) * globals::tileSize;
+	_textRect.y = (ypos) * globals::tileSize;
+	_textRect.w = globals::tileSize;
+	_textRect.h = globals::tileSize;
+	SDL_SetRenderDrawColor(Window::renderer, tile->bgcolor.r, tile->bgcolor.g, tile->bgcolor.b, tile->bgcolor.a);
+	SDL_RenderFillRect(Window::renderer, &_textRect);
+	//fg
+	SDL_QueryTexture(spriteptr, 0, 0, &_textRect.w, &_textRect.h);
+	//adjust x/y pos of chars?
+	SDL_SetTextureColorMod(spriteptr, tile->fgcolor.r, tile->fgcolor.g, tile->fgcolor.b);
+	SDL_RenderCopy(Window::renderer, spriteptr, 0, &_textRect);
+}
+
+void TileHandler::drawVoxelSet(std::vector<std::vector<Voxel>>* vectorset, int x, int y) {
+	//handle right and bottom clip
+	int w = vectorset->size();
+	if (w == 0)
+		return;
+	int h = vectorset->at(0).size();
+	if (w + x > globals::tWidth)
+		w = globals::tWidth - x;
+	if (h + y > globals::tHeight)
+		h = globals::tHeight - y;
+
+	//handle left and top clip
+	int srcxoff = std::max(-x, 0);
+	int srcyoff = std::max(-y, 0);
+
+	//		###atm do all wall pass then all floor pass. optimize please##
+	for (int j = h - 1; j >= 0; j--) {
+		for (int i = srcxoff; i < w; i++) {
+			//printf("i:%d, j:%d\n", i, j);
+			Tile* a = &vectorset->at(i).at(j).sideTile;
+			if (a->character == 0)
+				continue;
+			drawSingleTile(a, x + (i % w), y + j + 1);
+
+		}
+	}
+	//i and j iterate through target texture
+	for (int j = h - 1; j >= 0; j--) {
+		for (int i = srcxoff; i < w; i++) {
+			//printf("i:%d, j:%d\n", i, j);
+			Tile* a = &vectorset->at(i).at(j).topTile;
+			if (a->character == 0)
+				continue;
+			drawSingleTile(a, x + (i % w), y + j);
+
 		}
 	}
 	//reset clear color at end
@@ -122,6 +171,13 @@ SDL_Texture* TileHandler::getSprite(Uint16 character) {
 void TileHandler::initTileSetTiles(std::vector<std::vector<Tile>>* destTileSet, int w, int h) {
 	Tile a;
 	std::vector<Tile> b;
+	b.resize(h, a);
+	destTileSet->resize(w, b);
+}
+
+void TileHandler::initVoxelSetVoxels(std::vector<std::vector<Voxel>>* destTileSet, int w, int h) {
+	Voxel a;
+	std::vector<Voxel> b;
 	b.resize(h, a);
 	destTileSet->resize(w, b);
 }
