@@ -34,7 +34,6 @@ void TileHandler::draw() {
 }
 
 void TileHandler::drawTileSet(std::vector<std::vector<Tile>>* tileset, int x, int y) {
-	SDL_SetRenderDrawColor(Window::renderer, 0, 0, 0, 255);
 	int w = tileset->size();
 	int h = tileset->at(0).size();
 	for (int j = h-1; j >= 0; j--) {
@@ -57,6 +56,8 @@ void TileHandler::drawTileSet(std::vector<std::vector<Tile>>* tileset, int x, in
 			SDL_RenderCopy(Window::renderer, spriteptr, 0, &_textRect);
 		}
 	}
+	//reset clear color at end
+	SDL_SetRenderDrawColor(Window::renderer, 0, 0, 0, 255);
 }
 
 TTF_Font* TileHandler::loadFont(const std::string fontPath, int fontSize) {
