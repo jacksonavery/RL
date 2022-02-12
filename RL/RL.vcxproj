@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="textbox.cpp" />
     <ClCompile Include="tile.cpp" />
@@ -140,6 +141,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="globals.h" />
+    <ClInclude Include="input.h" />
     <ClInclude Include="popup.h" />
     <ClInclude Include="textbox.h" />
     <ClInclude Include="tile.h" />

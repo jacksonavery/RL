@@ -2,7 +2,7 @@
 #include <SDL.h>
 #include <string>
 #include <iostream>
-#include <map>
+#include "input.h"
 #include "tileHandler.h"
 
 class Window {
@@ -15,10 +15,6 @@ private:
 	bool init();
 
 	void gameLoop();
-	void doEventInput();
-	void resetInput();
-	void handleKeyPress(const SDL_Event& ev);
-	void handleKeyRelease(const SDL_Event& ev);
 	void update(int elapsedTime);
 	void draw();
 
@@ -29,10 +25,7 @@ private:
 	bool _closed = false;
 
 	SDL_Window* _window = nullptr;
+	Input* _input = nullptr;
 
-	std::map<SDL_Scancode, bool> _pressedKeys;
-	std::map<SDL_Scancode, bool> _heldKeys;
-	std::map<SDL_Scancode, bool> _releasedKeys;
-
-	TileHandler* _th;
+	TileHandler* _th = nullptr;
 };

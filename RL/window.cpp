@@ -23,7 +23,7 @@ Window::~Window() {
 }
 
 bool Window::init() {
-	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+	if (SDL_Init(SDL_INIT_VIDEO || SDL_INIT_TIMER) != 0) {
 		printf("Failed to init SDL:%s\n", SDL_GetError());
 		return false;
 	}
@@ -59,12 +59,13 @@ bool Window::init() {
 }
 
 void Window::gameLoop() {
-	_th = new TileHandler(globals::font, globals::tileSize);
+	_input = new Input();
+	_th = new TileHandler(globals::font, globals::tileSize, _input);
 
 	int LAST_UPDATE_TIME = SDL_GetTicks();
 
 	while (!_closed) {
-		doEventInput();
+		_closed = _input->doEventInput();
 
 		//framerate cap
 		const int CURR_TIME_MS = SDL_GetTicks();
@@ -76,43 +77,7 @@ void Window::gameLoop() {
 	}
 
 	delete _th;
-}
-
-void Window::doEventInput() {
-	resetInput();
-
-	SDL_Event ev;
-	if (SDL_PollEvent(&ev)) {
-		switch (ev.type) {
-		case SDL_QUIT:
-			_closed = true;
-			break;
-		case SDL_KEYDOWN:
-			handleKeyPress(ev);
-			break;
-		case SDL_KEYUP:
-			handleKeyRelease(ev);
-			break;
-		default:
-			break;
-		}
-	}
-	if (_pressedKeys[SDL_SCANCODE_ESCAPE])
-		_closed = true;
-}
-
-void Window::resetInput() {
-	_pressedKeys.clear();
-}
-
-void Window::handleKeyPress(const SDL_Event& ev) {
-	_pressedKeys[ev.key.keysym.scancode] = true;
-	_heldKeys[ev.key.keysym.scancode] = true;
-}
-
-void Window::handleKeyRelease(const SDL_Event& ev) {
-	_releasedKeys[ev.key.keysym.scancode] = true;
-	_heldKeys[ev.key.keysym.scancode] = false;
+	delete _input;
 }
 
 void Window::draw() {

@@ -5,12 +5,13 @@
 #include <map>
 #include <vector>
 #include "globals.h"
+#include "input.h"
 #include "tile.h"
 #include "popup.h"
 
 class TileHandler {
 public:
-	TileHandler(const std::string fontPath, int fontSize);
+	TileHandler(const std::string fontPath, int fontSize, Input* input);
 	~TileHandler();
 
 	//updater
@@ -36,8 +37,12 @@ private:
 
 	std::vector<std::vector<Tile>> _bgTiles;
 	std::vector<Popup*> _popups;
-	int _w = globals::tWidth, _h = globals::tHeight;
+	//int _w = globals::tWidth, _h = globals::tHeight;
 	TTF_Font* _font;
 	SDL_Rect _textRect;
 	std::map<Uint16, SDL_Texture*> _spriteSheet;
+
+	Input* _input;
+
+	int camerax, cameray;
 };
