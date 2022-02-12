@@ -2,11 +2,14 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
+#include <SDL.h>
 #include "window.h"
 #include "textbox.h"
 
-TileHandler::TileHandler(const std::string fontPath, int fontSize) {
+TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input) {
 	_font = loadFont(fontPath, fontSize);
+	_input = input;
 
 	//TextBox* tb = new TextBox(u"どんな君に逢っても... 何気ない毎日が... 戸惑うキモチは 好きの裏返しだって 風にほどける髪に シンクロする呼吸(ブレス) コイカナ...(どーかな...) アイタイナ...(恋かも...) 甘い甘い Caramel Rythm どんな君に逢っても どんな心を描いたとしても Imagination, Merry-go-round 何気ない毎日が かけがえない時間になる 歩こう so, love 憂鬱でため息な日も 恋を閉じたりしないで あの時ああしたらなんて ジレンマに降参(white-flag) 後悔も... 衝動も... 曖昧で... アイタクテ... 回る回る Raspberry Magic みんな君を待ってる みんな心に願い抱いてる Immeasurably, Illumination 何気ない毎日が キラキラ輝きますように 祈るよ 空へ どんなTime capsuleも キミの心を変えられはしない 大丈夫 迷わないで 何気ない毎日が かけがいない記憶になる 歩こう so, love", 1, globals::tHeight-9, globals::tWidth-2, 8);
 	//TextBox* tb2 = new TextBox(u"申し訳ございませんが、友達がないみたいですうぅuuu", 2, 2);
@@ -14,7 +17,11 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize) {
 	//_popups.push_back(tb2);
 
 	//init tileset
-	initTileSetTiles(&_bgTiles, globals::tWidth, globals::tHeight);
+	initTileSetTiles(&_bgTiles, 5, 5);
+	_bgTiles.at(2).at(2).character = u'あ';
+
+	//init camera
+	camerax = cameray = 0;
 }
 
 TileHandler::~TileHandler() {
@@ -22,11 +29,12 @@ TileHandler::~TileHandler() {
 }
 
 void TileHandler::update(int elapsedTime) {
-	
+	camerax += _input->isKeyPressed(SDL_SCANCODE_D) - _input->isKeyPressed(SDL_SCANCODE_A);
+	cameray += _input->isKeyPressed(SDL_SCANCODE_S) - _input->isKeyPressed(SDL_SCANCODE_W);
 }
 
 void TileHandler::draw() {
-	drawTileSet(&_bgTiles);
+	drawTileSet(&_bgTiles, -camerax, -cameray);
 	for (int i = 0; i < _popups.size(); i++) {
 		auto t = _popups.at(i);
 		drawTileSet(&t->data, t->x, t->y);
@@ -34,10 +42,21 @@ void TileHandler::draw() {
 }
 
 void TileHandler::drawTileSet(std::vector<std::vector<Tile>>* tileset, int x, int y) {
+	//handle right and bottom clip
 	int w = tileset->size();
 	int h = tileset->at(0).size();
+	if (w + x > globals::tWidth)
+		w = globals::tWidth - x;
+	if (h + y > globals::tHeight)
+		h = globals::tHeight - y;
+
+	//handle left and top clip
+	int srcxoff = std::max(-x, 0);
+	int srcyoff = std::max(-y, 0);
+
+	//i and j iterate through target texture
 	for (int j = h-1; j >= 0; j--) {
-		for (int i = 0; i < w; i++) {
+		for (int i = srcxoff; i < w; i++) {
 			//printf("i:%d, j:%d\n", i, j);
 			Tile* a = &tileset->at(i).at(j);
 			auto spriteptr = getSprite(a->character);
