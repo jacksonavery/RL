@@ -7,6 +7,7 @@
 #include <agents.h>
 #include "window.h"
 #include "textbox.h"
+#include "colors.h"
 
 TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input) {
 	_font = loadFont(fontPath, fontSize);
@@ -16,11 +17,11 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input)
 	initTileSetTiles(&_bgTiles, 20, 20);
 	//_bgTiles.at(2).at(2).character = u'‚ ';
 
-	auto a = new TextBox(u"when susposter is in", 5, 5);
-	_popups.push_back(a);
+	auto a = new TextBox(u"when the susposter is in", 5, 5);
+	//_popups.push_back(a);
 
 	//init voxelset
-	initVoxelSetVoxels(&_voxels, 9, 7);
+	initVoxelSetVoxels(&_voxels, 11, 7);
 
 	_elevations.push_back(&_voxels);
 	_elevations.push_back(&_voxels);
@@ -86,7 +87,6 @@ void TileHandler::drawTileSet(std::vector<std::vector<Tile>>* tileset, int x, in
 			if (a->character == 0)
 				continue;
 			drawSingleTile(a, x + (i % w), y + j);
-			
 		}
 	}
 	//reset clear color at end
@@ -160,7 +160,7 @@ TTF_Font* TileHandler::loadFont(const std::string fontPath, int fontSize) {
 }
 
 SDL_Texture* TileHandler::loadTextTexture(Uint16 character) {
-	auto textSurface = TTF_RenderUNICODE_Blended(_font, &character, SDL_Color{255, 255, 255, 255});
+	auto textSurface = TTF_RenderUNICODE_Blended(_font, &character, cols::white);
 	if (!textSurface)
 		printf("Failed to create text surface:%s\n", SDL_GetError());
 
@@ -257,7 +257,7 @@ void TileHandler::makeBoundingBox(std::vector<std::vector<Tile>>* destTileSet, b
 	if (!w)
 		return;
 	int h = destTileSet->at(0).size();
-	Tile a(u' ', SDL_Color{ 255, 255, 255, 255 }, SDL_Color{ 0, 0, 0, 255 });
+	Tile a(u' ', cols::white, cols::black);
 	for (int i = 0; i < w*h; i++) {
 		destTileSet->at(i%w).at(i/w) = a;
 	}
