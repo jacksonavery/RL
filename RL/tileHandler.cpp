@@ -115,7 +115,7 @@ void TileHandler::drawVoxelSet(std::vector<std::vector<Voxel>>* vectorset, int x
 	if (w + x > globals::tWidth)
 		w = globals::tWidth - x;
 	if (h + y > globals::tHeight)
-		h = globals::tHeight - y;
+		h = globals::tHeight - y + 1;
 
 	//handle left and top clip
 	int srcxoff = std::max(-x, 0);
