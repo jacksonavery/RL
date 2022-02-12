@@ -42,6 +42,18 @@ void Input::handleKeyRelease(const SDL_Event& ev) {
 	_heldKeys[ev.key.keysym.scancode] = false;
 }
 
+bool Input::anyKeyHeld() {
+	return (_heldKeys.size() > 0);
+}
+
 bool Input::isKeyPressed(SDL_Scancode key) {
 	return _pressedKeys.count(key);
+}
+
+bool Input::isKeyHeld(SDL_Scancode key) {
+	return _heldKeys.count(key) && _heldKeys.at(key);
+}
+
+bool Input::isKeyReleased(SDL_Scancode key) {
+	return _releasedKeys.count(key);
 }

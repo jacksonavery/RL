@@ -7,6 +7,10 @@ public:
 	Input();
 
 	bool isKeyPressed(SDL_Scancode key);
+	bool isKeyHeld(SDL_Scancode key);
+	bool isKeyReleased(SDL_Scancode key);
+
+	bool anyKeyHeld();
 
 	//return false to quit game
 	bool doEventInput();
