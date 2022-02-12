@@ -14,7 +14,7 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input)
 
 	//init tileset
 	initTileSetTiles(&_bgTiles, 20, 20);
-	_bgTiles.at(2).at(2).character = u'‚ ';
+	//_bgTiles.at(2).at(2).character = u'‚ ';
 	//init voxelset
 	initVoxelSetVoxels(&_voxels, 9, 7);
 	_elevations.push_back(&_voxels);
@@ -100,7 +100,8 @@ void TileHandler::drawSingleTile(Tile* tile, int xpos, int ypos) {
 	SDL_RenderFillRect(Window::renderer, &_textRect);
 	//fg
 	SDL_QueryTexture(spriteptr, 0, 0, &_textRect.w, &_textRect.h);
-	//adjust x/y pos of chars?
+	//i dont like this but it seems to work
+		_textRect.h--;
 	SDL_SetTextureColorMod(spriteptr, tile->fgcolor.r, tile->fgcolor.g, tile->fgcolor.b);
 	SDL_RenderCopy(Window::renderer, spriteptr, 0, &_textRect);
 }
