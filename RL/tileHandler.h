@@ -29,7 +29,7 @@ public:
 	//breaks a string down into the world
 	static void makeStringNaive(const char16_t* string, std::vector<std::vector<Tile>>* destTileSet, int x, int y, int w, int h);
 	//fills a layer with a box **EXPECTS TO FILL THE WHOLE LAYER, WILL NOT FUNCTION CORRECTLY OTHERWISE**
-	static void makeBoundingBox(std::vector<std::vector<Tile>>* destTileSet, int x, int y, int w, int h);
+	static void makeBoundingBox(std::vector<std::vector<Tile>>* destTileSet, bool isThick = true);
 private:
 	//loads a font and sets it
 	static TTF_Font* loadFont(const std::string fontPath, int fontSize);

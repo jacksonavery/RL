@@ -15,8 +15,13 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input)
 	//init tileset
 	initTileSetTiles(&_bgTiles, 20, 20);
 	//_bgTiles.at(2).at(2).character = u'‚ ';
+
+	auto a = new TextBox(u"when susposter is in", 5, 5);
+	_popups.push_back(a);
+
 	//init voxelset
 	initVoxelSetVoxels(&_voxels, 9, 7);
+
 	_elevations.push_back(&_voxels);
 	_elevations.push_back(&_voxels);
 	_elevations.push_back(&_voxels);
@@ -101,7 +106,7 @@ void TileHandler::drawSingleTile(Tile* tile, int xpos, int ypos) {
 	//fg
 	SDL_QueryTexture(spriteptr, 0, 0, &_textRect.w, &_textRect.h);
 	//i dont like this but it seems to work
-		_textRect.h--;
+		_textRect.y--;
 	SDL_SetTextureColorMod(spriteptr, tile->fgcolor.r, tile->fgcolor.g, tile->fgcolor.b);
 	SDL_RenderCopy(Window::renderer, spriteptr, 0, &_textRect);
 }
@@ -246,25 +251,29 @@ void TileHandler::makeStringNaive(const char16_t* string, std::vector<std::vecto
 	}
 }
 
-void TileHandler::makeBoundingBox(std::vector<std::vector<Tile>>* destTileSet, int x, int y, int w, int h) {
+void TileHandler::makeBoundingBox(std::vector<std::vector<Tile>>* destTileSet, bool isThick) {
 	//init to empty tiles
+	int w = destTileSet->size();
+	if (!w)
+		return;
+	int h = destTileSet->at(0).size();
 	Tile a(u' ', SDL_Color{ 255, 255, 255, 255 }, SDL_Color{ 0, 0, 0, 255 });
 	for (int i = 0; i < w*h; i++) {
 		destTileSet->at(i%w).at(i/w) = a;
 	}
 	//top/bot
 	for (int i = 0; i < w; i++) {
-		destTileSet->at(i).at(0).character = 0x2500;
-		destTileSet->at(i).at(h-1).character = 0x2500;
+		destTileSet->at(i).at(0).character = 0x2500 + isThick;
+		destTileSet->at(i).at(h-1).character = 0x2500 + isThick;
 	}
 	//sides
 	for (int i = 0; i < h; i++) {
-		destTileSet->at(0).at(i).character = 0x2502;
-		destTileSet->at(w-1).at(i).character = 0x2502;
+		destTileSet->at(0).at(i).character = 0x2502 + isThick;
+		destTileSet->at(w-1).at(i).character = 0x2502 + isThick;
 	}
 	//corners
-	destTileSet->at(0).at(0).character = 0x250C;
-	destTileSet->at(w-1).at(0).character = 0x2510;
-	destTileSet->at(0).at(h-1).character = 0x2514;
-	destTileSet->at(w-1).at(h-1).character = 0x2518;
+	destTileSet->at(0).at(0).character = 0x250C + 3 * isThick;
+	destTileSet->at(w-1).at(0).character = 0x2510 + 3 * isThick;
+	destTileSet->at(0).at(h-1).character = 0x2514 + 3 * isThick;
+	destTileSet->at(w-1).at(h-1).character = 0x2518 + 3 * isThick;
 }
