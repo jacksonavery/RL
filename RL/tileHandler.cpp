@@ -17,17 +17,15 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input)
 	initTileSetTiles(&_bgTiles, 20, 20);
 	//_bgTiles.at(2).at(2).character = u'‚ ';
 
-	auto a = new TextBox(u"when the susposter is in", 5, 5);
+	//auto a = new TextBox(u"when the susposter is in", 5, 5);
 	//_popups.push_back(a);
 
 	//init voxelset
-	initVoxelSetVoxels(&_voxels, 11, 7);
+	initVoxelSetVoxels(&_voxels, 8, 5);
 
-	_elevations.push_back(&_voxels);
-	_elevations.push_back(&_voxels);
-	_elevations.push_back(&_voxels);
-	_elevations.push_back(&_voxels);
-	_elevations.push_back(&_voxels);
+	_elevations.push_back(_voxels);
+	_elevations.push_back(_voxels);
+	_elevations.push_back(_voxels);
 
 	//init camera
 	_camerax = _cameray = 0;
@@ -51,18 +49,48 @@ void TileHandler::doCameraMovement(int elapsedTime) {
 	}
 }
 
-void TileHandler::draw() {
-	//base tiles
-	drawTileSet(&_bgTiles, -_camerax, -_cameray);
-	//voxels
-	for (int i = 0; i < _elevations.size(); i++) {
-		drawVoxelSet(_elevations.at(i), -_camerax, -_cameray-i);
-	}
-	//drawVoxelSet(&_voxels, -_camerax+2, -_cameray+2);
-	//popups
-	for (int i = 0; i < _popups.size(); i++) {
-		auto t = _popups.at(i);
-		drawTileSet(&t->data, t->x, t->y);
+void TileHandler::drawRT() {
+	//i and j are screenspace camera coords
+	for (int i = _camerax; i < globals::tWidth + _camerax; i++) {
+		for (int j = _cameray; j < globals::tHeight + _cameray; j++) {
+			//xyz are current voxel's pos
+			int x = i;
+			int y = j;
+			int z = _elevations.size() - 1;
+
+			//break if outside of drawable set
+			if (x < 0 || x > _elevations.at(0).size() - 1)
+				continue;
+			if (y < 0 || y > _elevations.at(0).at(0).size() - 1) {
+				continue;
+			}
+
+			// the 'raycast'
+			while (true) {
+				auto currVox = &_elevations.at(z).at(x).at(y);
+				if (_elevations.at(z).at(x).at(y).topTile.character != u' ') {
+					drawSingleTile(&currVox->topTile, i - _camerax, j - _cameray);
+					break;
+				}
+				
+				y--;
+				if (y < 0) {
+					break;
+				}
+				currVox = &_elevations.at(z).at(x).at(y);
+				if (_elevations.at(z).at(x).at(y).sideTile.character != u' ') {
+					drawSingleTile(&currVox->sideTile, i - _camerax, j - _cameray);
+					break;
+				}
+
+				z--;
+				if (z < 0) {
+					drawSingleTile(&Tile(u'E'), i - _camerax, j - _cameray);
+					break;
+				}
+					
+			}
+		}
 	}
 }
 
@@ -191,9 +219,14 @@ void TileHandler::initTileSetTiles(std::vector<std::vector<Tile>>* destTileSet, 
 
 void TileHandler::initVoxelSetVoxels(std::vector<std::vector<Voxel>>* destTileSet, int w, int h) {
 	Voxel a;
+	Voxel empt( &Tile(u' '), &Tile(u' ') );
 	std::vector<Voxel> b;
+	std::vector<Voxel> c;
 	b.resize(h, a);
+	b.resize(20, empt);
+	c.resize(20, empt);
 	destTileSet->resize(w, b);
+	destTileSet->resize(20, c);
 }
 
 //void TileHandler::makeString(const char16_t* string, Tile* destTileSet, int x, int y, int w, int h, bool smartWordCut) {

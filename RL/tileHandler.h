@@ -18,7 +18,7 @@ public:
 	//updater
 	void update(int elapsedTime);
 	//calls all draws
-	void draw();
+	void drawRT();
 	
 	//loads a sprite if it's hasnt been loaded yet. then returns a pointer to it
 	SDL_Texture* getSprite(Uint16 character);
@@ -48,7 +48,7 @@ private:
 
 	std::vector<std::vector<Tile>> _bgTiles;
 	std::vector<std::vector<Voxel>> _voxels;
-	std::vector<std::vector<std::vector<Voxel>>*> _elevations;
+	std::vector<std::vector<std::vector<Voxel>>> _elevations;
 	std::vector<Popup*> _popups;
 
 

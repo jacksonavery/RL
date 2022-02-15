@@ -2,7 +2,7 @@
 #include "tile.h"
 
 struct Voxel {
-	Voxel(Tile* top = &Tile(0x71d5), Tile* side = &Tile(0x5182));
+	Voxel(Tile* top = &Tile(u'Åú'), Tile* side = &Tile(u'ÅZ'));
 
 	Tile topTile, sideTile;
 };

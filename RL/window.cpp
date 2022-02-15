@@ -82,7 +82,7 @@ void Window::gameLoop() {
 
 void Window::draw() {
 	SDL_RenderClear(renderer);
-	_th->draw();
+	_th->drawRT();
 	SDL_RenderPresent(renderer);
 }
 
