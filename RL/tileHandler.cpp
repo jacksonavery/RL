@@ -21,10 +21,11 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input)
 	//_popups.push_back(a);
 
 	//init voxelset
-	initVoxelSetVoxels(&_voxels, 5, 2);
-
-	_elevations.push_back(_voxels);
-	_elevations.push_back(_voxels);
+	//initVoxelSetVoxels(&_voxels, 5, 2);
+	//_elevations.push_back(_voxels);
+	//initVoxelSetVoxels(&_voxels, 3, 2);
+	//_elevations.push_back(_voxels);
+	initVoxelSetVoxels(&_voxels, 1, 1);
 	_elevations.push_back(_voxels);
 
 	//init camera
@@ -117,12 +118,12 @@ void TileHandler::drawRT() {
 		for (j = _cameray; j < globals::tHeight + _cameray; j++) {
 			//xyz are current voxel's pos in vector space
 			if (!xySwap) {
-				x = xFlipped ? globals::tWidth - i - 1 : i;
-				y = yFlipped ? globals::tHeight - j - 1 : j;
+				x = xFlipped ? _elevations.at(0).size() - i - 1 : i;
+				y = yFlipped ? _elevations.at(0).at(0).size() - j - 1 : j;
 			}
 			else {
-				y = yFlipped ? globals::tWidth - i - 1 : i;
-				x = xFlipped ? globals::tHeight - j - 1 : j;
+				y = yFlipped ? _elevations.at(0).size() - i - 1 : i;
+				x = xFlipped ? _elevations.at(0).at(0).size() - j - 1 : j;
 			}
 			int z = _elevations.size() - 1;
 
@@ -131,12 +132,14 @@ void TileHandler::drawRT() {
 				continue;
 			if (y < 0 || y > _elevations.at(0).at(0).size() - 1) {
 				//this calculates entry point for the front face
-				//if (y - z <= _elevations.at(0).at(0).size()) {
-				//	y = _elevations.at(0).at(0).size() - 1;
-				//	z -= _elevations.at(0).at(0).size() - y;
-				//}
-				//else
-					continue;
+				if (y - z <= _elevations.at(0).at(0).size()) {
+					if (_camerar == 0) {
+						z -= _elevations.at(0).at(0).size() - y;
+						y = _elevations.at(0).at(0).size() - 1;
+					}
+					else continue;
+				}
+				else continue;
 			}
 			
 
@@ -303,10 +306,10 @@ void TileHandler::initVoxelSetVoxels(std::vector<std::vector<Voxel>>* destTileSe
 	std::vector<Voxel> b;
 	std::vector<Voxel> c;
 	b.resize(h, a);
-	b.resize(10, empt);
-	c.resize(10, empt);
+	b.resize(3, empt);
+	c.resize(3, empt);
 	destTileSet->resize(w, b);
-	destTileSet->resize(10, c);
+	destTileSet->resize(3, c);
 }
 
 //void TileHandler::makeString(const char16_t* string, Tile* destTileSet, int x, int y, int w, int h, bool smartWordCut) {
