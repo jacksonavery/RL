@@ -74,6 +74,8 @@ void Window::gameLoop() {
 		LAST_UPDATE_TIME = CURR_TIME_MS;
 
 		draw();
+
+		//while (true) {}
 	}
 
 	delete _th;
