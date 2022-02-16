@@ -25,7 +25,7 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input)
 	//_elevations.push_back(_voxels);
 	//initVoxelSetVoxels(&_voxels, 3, 2);
 	//_elevations.push_back(_voxels);
-	initVoxelSetVoxels(&_voxels, 1, 1);
+	initVoxelSetVoxels(&_voxels, 1, 3);
 	_elevations.push_back(_voxels);
 
 	//init camera
@@ -131,20 +131,17 @@ void TileHandler::drawRT() {
 			if (x < 0 || x > _elevations.at(0).size() - 1)
 				continue;
 			if (y < 0 || y > _elevations.at(0).at(0).size() - 1) {
-				//this calculates entry point for the front face
-				if (y - z <= _elevations.at(0).at(0).size()) {
-					if (_camerar == 0) {
-						z -= _elevations.at(0).at(0).size() - y;
-						y = _elevations.at(0).at(0).size() - 1;
-					}
-					else continue;
-				}
-				else continue;
+				continue;
 			}
 			
 
 			// the 'raycast'
 			while (true) {
+				//check if out of bounds
+				if (z < 0) {
+					drawSingleTile(&Tile(u'E'), i - _camerax, j - _cameray);
+					break;
+				}
 				//printf("drawing %d %d %d\n", x, y, z);
 				//the top of the tile
 				auto currVox = &_elevations.at(z).at(x).at(y);
@@ -165,13 +162,8 @@ void TileHandler::drawRT() {
 					break;
 				}
 
-				//the tile below (or a u'E' if we reach the bottom)
+				//the tile below
 				z--;
-				if (z < 0) {
-					drawSingleTile(&Tile(u'E'), i - _camerax, j - _cameray);
-					break;
-				}
-					
 			}
 		}
 	}
