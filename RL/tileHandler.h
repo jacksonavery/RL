@@ -58,6 +58,6 @@ private:
 
 	Input* _input;
 
-	int _camerax, _cameray;
+	int _camerax, _cameray, _camerar;
 	int _timeSinceLastCameraUpdate;
 };

@@ -21,14 +21,14 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input)
 	//_popups.push_back(a);
 
 	//init voxelset
-	initVoxelSetVoxels(&_voxels, 8, 5);
+	initVoxelSetVoxels(&_voxels, 5, 2);
 
 	_elevations.push_back(_voxels);
 	_elevations.push_back(_voxels);
 	_elevations.push_back(_voxels);
 
 	//init camera
-	_camerax = _cameray = 0;
+	_camerax = _cameray = _camerar = 0;
 	_timeSinceLastCameraUpdate = 0;
 }
 
@@ -47,34 +47,76 @@ void TileHandler::doCameraMovement(int elapsedTime) {
 		_cameray += _input->isKeyHeld(SDL_SCANCODE_S) - _input->isKeyHeld(SDL_SCANCODE_W);
 		_timeSinceLastCameraUpdate = 0;
 	}
+	if (_input->isKeyPressed(SDL_SCANCODE_R)) {
+		_camerar = (_camerar + 1) % 4;
+	}
 }
 
 void TileHandler::drawRT() {
-	//i and j are screenspace camera coords
-	for (int i = _camerax; i < globals::tWidth + _camerax; i++) {
-		for (int j = _cameray; j < globals::tHeight + _cameray; j++) {
-			//xyz are current voxel's pos
-			int x = i;
-			int y = j;
+	//i and j are screenspace camera coords,
+	//xyz are the location of the iterator through space
+	int i;
+	int j;
+	////x/y are initialized here
+	int x;
+	int y;
+	////these variables control where we start from
+	bool xFlipped = false;
+	bool yFlipped = false;
+	//the x/y modifiers each step (one will always be 0), and their bounds
+	int xmod;
+	int ymod;
+	int xbound;
+	int ybound;
+
+
+	switch (_camerar) {
+	default:
+		return;
+	case 0:
+		xFlipped = false;
+		yFlipped = false;
+		xmod = 0;
+		ymod = -1;
+		xbound = -2; //arb. unreachable val
+		ybound = -1;
+
+		break;
+	}
+	for (i = _camerax; i < globals::tWidth + _camerax; i++) {
+		for (j = _cameray; j < globals::tHeight + _cameray; j++) {
+			//xyz are current voxel's pos in vector space
+			x = i;
+			y = j;
 			int z = _elevations.size() - 1;
 
 			//break if outside of drawable set
 			if (x < 0 || x > _elevations.at(0).size() - 1)
 				continue;
 			if (y < 0 || y > _elevations.at(0).at(0).size() - 1) {
-				continue;
+				//this calculates entry point for the front face
+				if (y - z <= _elevations.at(0).at(0).size()) {
+					y = _elevations.at(0).at(0).size() - 1;
+					z -= _elevations.at(0).at(0).size() - y;
+				}
+				else
+					continue;
 			}
+			
 
 			// the 'raycast'
 			while (true) {
+				//the top of the tile
 				auto currVox = &_elevations.at(z).at(x).at(y);
 				if (_elevations.at(z).at(x).at(y).topTile.character != u' ') {
 					drawSingleTile(&currVox->topTile, i - _camerax, j - _cameray);
 					break;
 				}
 				
-				y--;
-				if (y < 0) {
+				//the front face of the tile one further back
+				x += xmod;
+				y += ymod;
+				if (y == ybound || x == xbound) {
 					break;
 				}
 				currVox = &_elevations.at(z).at(x).at(y);
@@ -83,6 +125,7 @@ void TileHandler::drawRT() {
 					break;
 				}
 
+				//the tile below (or a E if we reach the bottom)
 				z--;
 				if (z < 0) {
 					drawSingleTile(&Tile(u'E'), i - _camerax, j - _cameray);
@@ -223,10 +266,10 @@ void TileHandler::initVoxelSetVoxels(std::vector<std::vector<Voxel>>* destTileSe
 	std::vector<Voxel> b;
 	std::vector<Voxel> c;
 	b.resize(h, a);
-	b.resize(20, empt);
-	c.resize(20, empt);
+	b.resize(6, empt);
+	c.resize(6, empt);
 	destTileSet->resize(w, b);
-	destTileSet->resize(20, c);
+	destTileSet->resize(6, c);
 }
 
 //void TileHandler::makeString(const char16_t* string, Tile* destTileSet, int x, int y, int w, int h, bool smartWordCut) {
