@@ -18,6 +18,7 @@ public:
 	//updater
 	void update(int elapsedTime);
 	//calls all draws
+	void draw();
 	void drawRT();
 	
 	//loads a sprite if it's hasnt been loaded yet. then returns a pointer to it

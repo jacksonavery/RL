@@ -25,8 +25,12 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input)
 	//_elevations.push_back(_voxels);
 	//initVoxelSetVoxels(&_voxels, 3, 2);
 	//_elevations.push_back(_voxels);
-	initVoxelSetVoxels(&_voxels, 1, 3);
+	initVoxelSetVoxels(&_voxels, 1, 5);
 	_elevations.push_back(_voxels);
+	_elevations.push_back(_voxels);
+	_elevations.push_back(_voxels);
+	_elevations.push_back(_voxels);
+
 
 	//init camera
 	_camerax = _cameray = 0;
@@ -127,13 +131,13 @@ void TileHandler::drawRT() {
 			}
 			int z = _elevations.size() - 1;
 
-			//break if outside of drawable set
-			if (x < 0 || x > _elevations.at(0).size() - 1)
+			//break if outside of drawable set, or forward if along front face
+			if (x < 0 || x > _elevations.at(0).size() - 1) {
 				continue;
+			}
 			if (y < 0 || y > _elevations.at(0).at(0).size() - 1) {
 				continue;
 			}
-			
 
 			// the 'raycast'
 			while (true) {
@@ -145,17 +149,18 @@ void TileHandler::drawRT() {
 				//printf("drawing %d %d %d\n", x, y, z);
 				//the top of the tile
 				auto currVox = &_elevations.at(z).at(x).at(y);
+				//chech if drawing from front of drawbox
 				if (_elevations.at(z).at(x).at(y).topTile.character != u' ') {
 					drawSingleTile(&currVox->topTile, i - _camerax, j - _cameray);
 					break;
 				}
-				
 				//the front face of the tile one further back
 				x += xmod;
 				y += ymod;
 				if (y == ybound || x == xbound) {
 					break;
 				}
+
 				currVox = &_elevations.at(z).at(x).at(y);
 				if (_elevations.at(z).at(x).at(y).sideTile.character != u' ') {
 					drawSingleTile(&currVox->sideTile, i - _camerax, j - _cameray);
@@ -298,10 +303,11 @@ void TileHandler::initVoxelSetVoxels(std::vector<std::vector<Voxel>>* destTileSe
 	std::vector<Voxel> b;
 	std::vector<Voxel> c;
 	b.resize(h, a);
-	b.resize(3, empt);
-	c.resize(3, empt);
+	//b.at(0).topTile.character = u'~';
+	b.resize(5, empt);
+	c.resize(5, empt);
 	destTileSet->resize(w, b);
-	destTileSet->resize(3, c);
+	destTileSet->resize(5, c);
 }
 
 //void TileHandler::makeString(const char16_t* string, Tile* destTileSet, int x, int y, int w, int h, bool smartWordCut) {
