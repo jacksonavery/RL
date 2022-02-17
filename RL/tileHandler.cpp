@@ -76,6 +76,8 @@ void TileHandler::drawRT() {
 	int xbound;
 	int ybound;
 
+	bool drawSide = false;
+
 	//handle rotation variables
 	switch (_camerar) {
 	default:
@@ -136,7 +138,13 @@ void TileHandler::drawRT() {
 				continue;
 			}
 			if (y < 0 || y > _elevations.at(0).at(0).size() - 1) {
-				continue;
+				if (y - z <= _elevations.at(0).at(0).size()) {
+					y = _elevations.at(0).at(0).size() - 1;
+					z -= _elevations.at(0).at(0).size() - y;
+					drawSide = true;
+				}
+				else
+					continue;
 			}
 
 			// the 'raycast'
@@ -146,20 +154,22 @@ void TileHandler::drawRT() {
 					drawSingleTile(&Tile(u'E'), i - _camerax, j - _cameray);
 					break;
 				}
-				//printf("drawing %d %d %d\n", x, y, z);
 				//the top of the tile
 				auto currVox = &_elevations.at(z).at(x).at(y);
 				//chech if drawing from front of drawbox
-				if (_elevations.at(z).at(x).at(y).topTile.character != u' ') {
-					drawSingleTile(&currVox->topTile, i - _camerax, j - _cameray);
-					break;
+				if (!drawSide) {
+					if (_elevations.at(z).at(x).at(y).topTile.character != u' ') {
+						drawSingleTile(&currVox->topTile, i - _camerax, j - _cameray);
+						break;
+					}
+					//the front face of the tile one further back
+					x += xmod;
+					y += ymod;
+					if (y == ybound || x == xbound) {
+						break;
+					}
 				}
-				//the front face of the tile one further back
-				x += xmod;
-				y += ymod;
-				if (y == ybound || x == xbound) {
-					break;
-				}
+				drawSide = false;
 
 				currVox = &_elevations.at(z).at(x).at(y);
 				if (_elevations.at(z).at(x).at(y).sideTile.character != u' ') {
