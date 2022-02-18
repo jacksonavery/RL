@@ -35,6 +35,13 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input)
 	_camerar = 0;
 	_camerah = 1;
 	_timeSinceLastCameraUpdate = 0;
+
+	//init screen
+	Tile* t = new Tile(u'ア');
+	_screen.resize(globals::tWidth);
+	for (int i = 0; i < _screen.size(); i++) {
+		_screen.at(i).resize(globals::tHeight, t);
+	}
 }
 
 TileHandler::~TileHandler() {
@@ -64,16 +71,37 @@ void TileHandler::doCameraMovement(int elapsedTime) {
 }
 
 void TileHandler::draw() {
-	
-	for (int i = 0; i < _elevations.size(); i++) {
-		drawRTwithRot();
+	for (int i = 0; i < _screen.size(); i++) {
+		for (int j = 0; j < _screen.at(0).size(); j++) {
+			_screen.at(i).at(j) = new Tile(0);
+		}
 	}
+	
+	//for (int i = 0; i < _elevations.size(); i++) {
+		drawRTwithRotToScreen(&_screen);
+	//}
 	for (int i = 0; i < _popups.size(); i++) {
-		drawTileSet(&_popups.at(i)->data);
+		drawTileSetToScreen(&_popups.at(i)->data, &_screen);
+	}
+
+	drawScreen(&_screen);
+}
+
+void TileHandler::drawScreen(std::vector<std::vector<Tile*>>* screen) {
+	int h = globals::tHeight;
+	int w = globals::tWidth;
+	for (int j = h - 1; j >= 0; j--) {
+		for (int i = 0; i < w; i++) {
+			//printf("i:%d, j:%d\n", i, j);
+			Tile* a = screen->at(i).at(j);
+			if (a->character == 0)
+				continue;
+			drawSingleTile(a, (i % w), j);
+		}
 	}
 }
 
-void TileHandler::drawRTwithRot() {
+void TileHandler::drawRTwithRotToScreen(std::vector<std::vector<Tile*>>* screen) {
 	//i and j are screenspace camera coords,
 	//xyz are the location of the iterator through space
 	int i;
@@ -166,7 +194,8 @@ void TileHandler::drawRTwithRot() {
 			while (true) {
 				//check if out of bounds
 				if (z < 0) {
-					drawSingleTile(&Tile(u'・'), i - _camerax, j - _cameray);
+					screen->at(i - _camerax).at(j - _cameray) = new Tile(u'・');
+					//drawSingleTile(&Tile(u'・'), i - _camerax, j - _cameray);
 					break;
 				}
 				//the top of the tile
@@ -174,7 +203,8 @@ void TileHandler::drawRTwithRot() {
 				//chech if drawing from front of drawbox
 				if (!drawSide) {
 					if (_elevations.at(z).at(x).at(y).topTile.character != u' ') {
-						drawSingleTile(&currVox->topTile, i - _camerax, j - _cameray);
+						screen->at(i - _camerax).at(j - _cameray) = &currVox->topTile;
+						//1drawSingleTile(&currVox->topTile, i - _camerax, j - _cameray);
 						break;
 					}
 					//the front face of the tile one further back
@@ -188,7 +218,8 @@ void TileHandler::drawRTwithRot() {
 
 				currVox = &_elevations.at(z).at(x).at(y);
 				if (_elevations.at(z).at(x).at(y).sideTile.character != u' ') {
-					drawSingleTile(&currVox->sideTile, i - _camerax, j - _cameray);
+					screen->at(i - _camerax).at(j - _cameray) = &currVox->sideTile;
+					//1drawSingleTile(&currVox->sideTile, i - _camerax, j - _cameray);
 					break;
 				}
 
@@ -199,7 +230,7 @@ void TileHandler::drawRTwithRot() {
 	}
 }
 
-void TileHandler::drawTileSet(std::vector<std::vector<Tile>>* tileset, int x, int y) {
+void TileHandler::drawTileSetToScreen(std::vector<std::vector<Tile>>* tileset, std::vector<std::vector<Tile*>>* screen, int x, int y) {
 	//handle right and bottom clip
 	int w = tileset->size();
 	int h = tileset->at(0).size();
@@ -213,13 +244,13 @@ void TileHandler::drawTileSet(std::vector<std::vector<Tile>>* tileset, int x, in
 	int srcyoff = std::max(-y, 0);
 
 	//i and j iterate through target texture
-	for (int j = h-1; j >= 0; j--) {
+	for (int j = h - 1; j >= 0; j--) {
 		for (int i = srcxoff; i < w; i++) {
 			//printf("i:%d, j:%d\n", i, j);
 			Tile* a = &tileset->at(i).at(j);
 			if (a->character == 0)
 				continue;
-			drawSingleTile(a, x + (i % w), y + j);
+			screen->at(x + (i % w)).at(y + j) = a;
 		}
 	}
 	//reset clear color at end

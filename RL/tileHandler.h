@@ -35,14 +35,16 @@ private:
 	static TTF_Font* loadFont(const std::string fontPath, int fontSize);
 	//actually loads the sprite texture
 	SDL_Texture* loadTextTexture(Uint16 character);
-	//draws an actual set of tiles
-	void drawTileSet(std::vector<std::vector<Tile>>* tileset, int x = 0, int y = 0);
+	//draws an actual set of tiles to int. screen
+	void drawTileSetToScreen(std::vector<std::vector<Tile>>* tileset, std::vector<std::vector<Tile*>>* screen, int x = 0, int y = 0);
 	//draw one tile
 	void drawSingleTile(Tile* tile, int x, int y);
 	//draws a set of voxels
 	void drawVoxelSet(std::vector<std::vector<Voxel>>* tileset, int x = 0, int y = 0);
 	//raytrace draw wiht rot supp
-	void drawRTwithRot();
+	void drawRTwithRotToScreen(std::vector<std::vector<Tile*>>* screen);
+
+	void drawScreen(std::vector<std::vector<Tile*>>* screen);
 
 
 	//update camera pos
@@ -53,7 +55,7 @@ private:
 	std::vector<std::vector<std::vector<Voxel>>> _elevations;
 	std::vector<Popup*> _popups;
 
-	std::vector<std::vector<Tile>> _screen;
+	std::vector<std::vector<Tile*>> _screen;
 
 
 	TTF_Font* _font;
