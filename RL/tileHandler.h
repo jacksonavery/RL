@@ -19,7 +19,6 @@ public:
 	void update(int elapsedTime);
 	//calls all draws
 	void draw();
-	void drawRT();
 	
 	//loads a sprite if it's hasnt been loaded yet. then returns a pointer to it
 	SDL_Texture* getSprite(Uint16 character);
@@ -42,6 +41,8 @@ private:
 	void drawSingleTile(Tile* tile, int x, int y);
 	//draws a set of voxels
 	void drawVoxelSet(std::vector<std::vector<Voxel>>* tileset, int x = 0, int y = 0);
+	//raytrace draw wiht rot supp
+	void drawRTwithRot();
 
 
 	//update camera pos
@@ -52,6 +53,8 @@ private:
 	std::vector<std::vector<std::vector<Voxel>>> _elevations;
 	std::vector<Popup*> _popups;
 
+	std::vector<std::vector<Tile>> _screen;
+
 
 	TTF_Font* _font;
 	SDL_Rect _textRect;
@@ -59,6 +62,6 @@ private:
 
 	Input* _input;
 
-	int _camerax, _cameray, _camerar;
+	int _camerax, _cameray, _camerar, _camerah;
 	int _timeSinceLastCameraUpdate;
 };

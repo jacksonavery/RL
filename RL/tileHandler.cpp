@@ -17,17 +17,15 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input)
 	initTileSetTiles(&_bgTiles, 20, 20);
 	//_bgTiles.at(2).at(2).character = u'‚ ';
 
-	//auto a = new TextBox(u"when the susposter is in", 5, 5);
-	//_popups.push_back(a);
+	auto a = new TextBox(u"when the susposter is in", 5, 5);
+	_popups.push_back(a);
 
 	//init voxelset
 	//initVoxelSetVoxels(&_voxels, 5, 2);
 	//_elevations.push_back(_voxels);
 	//initVoxelSetVoxels(&_voxels, 3, 2);
 	//_elevations.push_back(_voxels);
-	initVoxelSetVoxels(&_voxels, 1, 5);
-	_elevations.push_back(_voxels);
-	_elevations.push_back(_voxels);
+	initVoxelSetVoxels(&_voxels, 5, 5);
 	_elevations.push_back(_voxels);
 	_elevations.push_back(_voxels);
 
@@ -35,6 +33,7 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input)
 	//init camera
 	_camerax = _cameray = 0;
 	_camerar = 0;
+	_camerah = 1;
 	_timeSinceLastCameraUpdate = 0;
 }
 
@@ -53,12 +52,28 @@ void TileHandler::doCameraMovement(int elapsedTime) {
 		_cameray += _input->isKeyHeld(SDL_SCANCODE_S) - _input->isKeyHeld(SDL_SCANCODE_W);
 		_timeSinceLastCameraUpdate = 0;
 	}
-	if (_input->isKeyPressed(SDL_SCANCODE_R)) {
-		_camerar = (_camerar + 1) % 4;
+	//if (_input->isKeyPressed(SDL_SCANCODE_R)) {
+	//	_camerar = (_camerar + 1) % 4;
+	//}
+	if (_input->isKeyPressed(SDL_SCANCODE_Q)) {
+		_camerah = std::max(1, _camerah - 1);
+	}
+	if (_input->isKeyPressed(SDL_SCANCODE_E)) {
+		_camerah = std::min((int) _elevations.size() - 1, _camerah + 1);
 	}
 }
 
-void TileHandler::drawRT() {
+void TileHandler::draw() {
+	
+	for (int i = 0; i < _elevations.size(); i++) {
+		drawRTwithRot();
+	}
+	for (int i = 0; i < _popups.size(); i++) {
+		drawTileSet(&_popups.at(i)->data);
+	}
+}
+
+void TileHandler::drawRTwithRot() {
 	//i and j are screenspace camera coords,
 	//xyz are the location of the iterator through space
 	int i;
@@ -131,7 +146,7 @@ void TileHandler::drawRT() {
 				y = yFlipped ? _elevations.at(0).size() - i - 1 : i;
 				x = xFlipped ? _elevations.at(0).at(0).size() - j - 1 : j;
 			}
-			int z = _elevations.size() - 1;
+			int z = std::min((int)_elevations.size() - 1, _camerah);
 
 			//break if outside of drawable set, or forward if along front face
 			if (x < 0 || x > _elevations.at(0).size() - 1) {
@@ -314,10 +329,10 @@ void TileHandler::initVoxelSetVoxels(std::vector<std::vector<Voxel>>* destTileSe
 	std::vector<Voxel> c;
 	b.resize(h, a);
 	//b.at(0).topTile.character = u'~';
-	b.resize(5, empt);
-	c.resize(5, empt);
+	b.resize(40, empt);
+	c.resize(40, empt);
 	destTileSet->resize(w, b);
-	destTileSet->resize(5, c);
+	destTileSet->resize(40, c);
 }
 
 //void TileHandler::makeString(const char16_t* string, Tile* destTileSet, int x, int y, int w, int h, bool smartWordCut) {
