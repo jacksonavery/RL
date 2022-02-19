@@ -23,7 +23,7 @@ Window::~Window() {
 }
 
 bool Window::init() {
-	if (SDL_Init(SDL_INIT_VIDEO || SDL_INIT_TIMER) != 0) {
+	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
 		printf("Failed to init SDL:%s\n", SDL_GetError());
 		return false;
 	}
@@ -63,6 +63,9 @@ void Window::gameLoop() {
 	_th = new TileHandler(globals::font, globals::tileSize, _input);
 
 	int LAST_UPDATE_TIME = SDL_GetTicks();
+	
+	int startTime = LAST_UPDATE_TIME;
+	int frames = 0;
 
 	while (!_closed) {
 		_closed = _input->doEventInput();
@@ -74,9 +77,13 @@ void Window::gameLoop() {
 		LAST_UPDATE_TIME = CURR_TIME_MS;
 
 		draw();
+		frames++;
 
 		//while (true) {}
 	}
+	int totalTime = SDL_GetTicks() - startTime;
+	int FPS = frames / (totalTime / 1000);
+	printf("total:%d, frames:%d, FPS:%d", totalTime, frames, FPS);
 
 	delete _th;
 	delete _input;
