@@ -5,3 +5,218 @@ tiles:
 –å  9580
 ™c  5182
 “c  7530
+
+//doesnt work
+void TileHandler::drawVoxelSetToScreen(std::vector<std::vector<Voxel>>* vectorset, std::vector<std::vector<Tile*>>* screen, int x, int y) {
+	//handle right and bottom clip
+	int w = vectorset->size();
+	if (w == 0)
+		return;
+	int h = vectorset->at(0).size();
+	if (w + x > globals::tWidth)
+		w = globals::tWidth - x;
+	if (h + y > globals::tHeight)
+		h = globals::tHeight - y + 1;
+
+	//handle left and top clip
+	int srcxoff = std::max(-x, 0);
+	int srcyoff = std::max(-y, 0);
+
+
+	//		###atm do all wall pass then all floor pass. optimize please##
+	for (int j = h - 1; j >= 0; j--) {
+		for (int i = srcxoff; i < w; i++) {
+			//printf("i:%d, j:%d\n", i, j);
+			Tile* a = &vectorset->at(i).at(j).sideTile;
+			if (a->character == 0)
+				continue;
+			//1drawSingleTile(a, x + (i % w), y + j);
+			//Tile* zzzz = new Tile(u'a');
+			screen->at(x + (i % w)).at(y + j) = a;
+		}
+	}
+	//i and j iterate through target texture
+	for (int j = h - 1; j > 0; j--) {
+		for (int i = srcxoff; i < w; i++) {
+			//printf("i:%d, j:%d\n", i, j);
+			Tile* a = &vectorset->at(i).at(j).topTile;
+			if (a->character == 0)
+				continue;
+			//1drawSingleTile(a, x + (i % w), y + j - 1);
+			screen->at(x + (i % w)).at(y + j - 1) = a;
+		}
+	}
+	//reset clear color at end
+	SDL_SetRenderDrawColor(Window::renderer, 0, 0, 0, 255);
+}
+
+//void TileHandler::makeString(const char16_t* string, Tile* destTileSet, int x, int y, int w, int h, bool smartWordCut) {
+//	//i is the index of the string, posi is the index in physical space
+//	int i = 0;
+//	int posi = 0;
+//	//make everything fit
+//	if (w == 0 || x + w > globals::tWidth)
+//		w = globals::tWidth - x;
+//	if (h == 0 || y + h > globals::tHeight)
+//		h = globals::tHeight - h;
+//
+//	while (string[i] != u'\0' && posi < w*h) {
+//		Tile* currtile = &destTileSet[(posi % w + x) + (posi / w + y) * w];
+//		//add dash if across a border
+//		//(whole segment skipped if smart cut is off)
+//		if (smartWordCut && posi % w == w - 1 && string[i] != u' ' && string[i+1] != u' ') {
+//			//just skip to next line if first letter of word
+//			if (string[i-1] == u' ') {
+//				currtile->character = u' ';
+//				posi++;
+//				continue;
+//			}
+//			currtile->character = u'-'; //0x2014;
+//			posi++;
+//			continue;
+//		}
+//		//don't start a line with a space
+//		if (posi % w == 0 && string[i] == u' ') {
+//			i++;
+//			continue;
+//		}
+//		//respect '\n's
+//		if (string[i] == u'\n') {
+//			posi = (posi / w) * w + w;
+//			i++;
+//			continue;
+//		}
+//		currtile->character = string[i];
+//		posi++;
+//		i++;
+//	}
+//}
+
+void TileHandler::drawRTwithRotToScreen(std::vector<std::vector<Tile*>>* screen) {
+	//i and j are screenspace camera coords,
+	//xyz are the location of the iterator through space
+	int i;
+	int j;
+	////x/y are initialized here
+	int x;
+	int y;
+	////these variables control where we start from
+	bool xFlipped = false;
+	bool yFlipped = false;
+	bool xySwap = false;
+	//the x/y modifiers each step (one will always be 0), and their bounds
+	int xmod;
+	int ymod;
+	int xbound;
+	int ybound;
+
+	bool drawSide = false;
+
+	//handle rotation variables
+	switch (_camerar) {
+	default:
+		return;
+	case 0: //no transform, iterate -y
+		xFlipped = false;
+		yFlipped = false;
+		xySwap = false;
+		xmod = 0;
+		ymod = -1;
+		xbound = -2; //arb. unreachable val
+		ybound = -1;
+		break;
+	case 2: //both flip, iterate +y
+		xFlipped = true;
+		yFlipped = true;
+		xySwap = false;
+		xmod = 0;
+		ymod = 1;
+		xbound = -2; //arb. unreachable val
+		ybound = _elevations.at(0).at(0).size();
+		break;
+	case 1:
+		xFlipped = false;
+		yFlipped = true;
+		xySwap = true;
+		xmod = -1;
+		ymod = 0;
+		xbound = -1;
+		ybound = -2; //arb. unreachable val
+		break;
+	case 3:
+		xFlipped = true;
+		yFlipped = false;
+		xySwap = true;
+		xmod = 1;
+		ymod = 0;
+		xbound = _elevations.at(0).size();
+		ybound = -2; //arb. unreachable val
+		break;
+	}
+
+	for (i = _camerax; i < globals::tWidth + _camerax; i++) {
+		for (j = _cameray; j < globals::tHeight + _cameray; j++) {
+			//xyz are current voxel's pos in vector space
+			if (!xySwap) {
+				x = xFlipped ? _elevations.at(0).size() - i - 1 : i;
+				y = yFlipped ? _elevations.at(0).at(0).size() - j - 1 : j;
+			}
+			else {
+				y = yFlipped ? _elevations.at(0).size() - i - 1 : i;
+				x = xFlipped ? _elevations.at(0).at(0).size() - j - 1 : j;
+			}
+			int z = std::min((int)_elevations.size() - 1, _camerah);
+
+			//break if outside of drawable set, or forward if along front face
+			if (x < 0 || x > _elevations.at(0).size() - 1) {
+				continue;
+			}
+			if (y < 0 || y > _elevations.at(0).at(0).size() - 1) {
+				if (y - z <= _elevations.at(0).at(0).size()) {
+					y = _elevations.at(0).at(0).size() - 1;
+					z -= _elevations.at(0).at(0).size() - y;
+					drawSide = true;
+				}
+				else
+					continue;
+			}
+
+			// the 'raycast'
+			while (true) {
+				//check if out of bounds
+				if (z < 0) {
+					screen->at(i - _camerax).at(j - _cameray) = new Tile(u'E');
+					//drawSingleTile(&Tile(u'E'), i - _camerax, j - _cameray);
+					break;
+				}
+				//the top of the tile
+				auto currVox = &_elevations.at(z).at(x).at(y);
+				//chech if drawing from front of drawbox
+				if (!drawSide) {
+					if (_elevations.at(z).at(x).at(y).topTile.character != u' ') {
+						screen->at(i - _camerax).at(j - _cameray) = &currVox->topTile;
+						//1drawSingleTile(&currVox->topTile, i - _camerax, j - _cameray);
+						break;
+					}
+					//the front face of the tile one further back
+					x += xmod;
+					y += ymod;
+					if (y == ybound || x == xbound) {
+						break;
+					}
+				}
+				drawSide = false;
+
+				currVox = &_elevations.at(z).at(x).at(y);
+				if (_elevations.at(z).at(x).at(y).sideTile.character != u' ') {
+					screen->at(i - _camerax).at(j - _cameray) = &currVox->sideTile;
+					//1drawSingleTile(&currVox->sideTile, i - _camerax, j - _cameray);
+					break;
+				}
+
+				//the tile below
+				z--;
+			}
+		}
+	}
+}

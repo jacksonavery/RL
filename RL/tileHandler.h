@@ -20,7 +20,7 @@ public:
 	//calls all draws
 	void draw();
 	
-	//loads a sprite if it's hasnt been loaded yet. then returns a pointer to it
+	//loads a sprite if it hasnt been loaded yet. returns a pointer to it
 	SDL_Texture* getSprite(Uint16 character);
 	//fills with default tiles.
 	static void initTileSetTiles(std::vector<std::vector<Tile>>* destTileSet, int w, int h);
@@ -40,10 +40,10 @@ private:
 	//draw one tile
 	void drawSingleTile(Tile* tile, int x, int y);
 	//draws a set of voxels
-	void drawVoxelSet(std::vector<std::vector<Voxel>>* tileset, int x = 0, int y = 0);
-	//raytrace draw wiht rot supp
-	void drawRTwithRotToScreen(std::vector<std::vector<Tile*>>* screen);
-
+	void drawVoxelSetToScreen(std::vector<std::vector<Voxel>>* tileset, std::vector<std::vector<Tile*>>* screen, int x = 0, int y = 0);
+	//raytrace draw
+	void drawRTToScreen(std::vector<std::vector<Tile*>>* screen);
+	//actually draws screen to window
 	void drawScreen(std::vector<std::vector<Tile*>>* screen);
 
 
@@ -66,4 +66,7 @@ private:
 
 	int _camerax, _cameray, _camerar, _camerah;
 	int _timeSinceLastCameraUpdate;
+
+	Tile _zBoundTile = Tile(u'ÅE');
+	Tile _transparentTile = Tile(0);
 };

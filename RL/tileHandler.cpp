@@ -17,7 +17,7 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input)
 	initTileSetTiles(&_bgTiles, 20, 20);
 	//_bgTiles.at(2).at(2).character = u'Ç†';
 
-	auto a = new TextBox(u"when the susposter is in", 5, 5);
+	auto a = new TextBox(u"ãMï˚ÇÃóßèÍÇ¡ÇƒâΩÇæÇÎÇ§", 0, 0, globals::tWidth, globals::tHeight);
 	_popups.push_back(a);
 
 	//init voxelset
@@ -28,19 +28,28 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input)
 	initVoxelSetVoxels(&_voxels, 5, 5);
 	_elevations.push_back(_voxels);
 	_elevations.push_back(_voxels);
+	_elevations.push_back(_voxels);
+	_elevations.push_back(_voxels);
+	_elevations.push_back(_voxels);
+	_elevations.push_back(_voxels);
+	_elevations.push_back(_voxels);
+	_elevations.push_back(_voxels);
+	_elevations.push_back(_voxels);
+	_elevations.push_back(_voxels);
+	_elevations.push_back(_voxels);
+	_elevations.push_back(_voxels);
 
 
 	//init camera
 	_camerax = _cameray = 0;
 	_camerar = 0;
-	_camerah = 1;
+	_camerah = _elevations.size()-1;
 	_timeSinceLastCameraUpdate = 0;
 
 	//init screen
-	Tile* t = new Tile(u'ÉA');
 	_screen.resize(globals::tWidth);
 	for (int i = 0; i < _screen.size(); i++) {
-		_screen.at(i).resize(globals::tHeight, t);
+		_screen.at(i).resize(globals::tHeight, &_transparentTile);
 	}
 }
 
@@ -73,13 +82,12 @@ void TileHandler::doCameraMovement(int elapsedTime) {
 void TileHandler::draw() {
 	for (int i = 0; i < _screen.size(); i++) {
 		for (int j = 0; j < _screen.at(0).size(); j++) {
-			_screen.at(i).at(j) = new Tile(0);
+			_screen.at(i).at(j) = &_transparentTile;
 		}
 	}
 	
-	//for (int i = 0; i < _elevations.size(); i++) {
-		drawRTwithRotToScreen(&_screen);
-	//}
+	//drawRTToScreen(&_screen);
+
 	for (int i = 0; i < _popups.size(); i++) {
 		drawTileSetToScreen(&_popups.at(i)->data, &_screen);
 	}
@@ -96,12 +104,13 @@ void TileHandler::drawScreen(std::vector<std::vector<Tile*>>* screen) {
 			Tile* a = screen->at(i).at(j);
 			if (a->character == 0)
 				continue;
-			drawSingleTile(a, (i % w), j);
+			drawSingleTile(a, i, j);
 		}
 	}
 }
 
-void TileHandler::drawRTwithRotToScreen(std::vector<std::vector<Tile*>>* screen) {
+
+void TileHandler::drawRTToScreen(std::vector<std::vector<Tile*>>* screen) {
 	//i and j are screenspace camera coords,
 	//xyz are the location of the iterator through space
 	int i;
@@ -109,81 +118,33 @@ void TileHandler::drawRTwithRotToScreen(std::vector<std::vector<Tile*>>* screen)
 	////x/y are initialized here
 	int x;
 	int y;
-	////these variables control where we start from
-	bool xFlipped = false;
-	bool yFlipped = false;
-	bool xySwap = false;
-	//the x/y modifiers each step (one will always be 0), and their bounds
-	int xmod;
-	int ymod;
-	int xbound;
-	int ybound;
+	//the y modifier each step, and  bounds
+	int ymod = -1;
+	int ybound = -1;
 
+	//override for front face
 	bool drawSide = false;
+	int zHeight = std::min(_elevations.size() - 1, (unsigned int)_camerah);
 
-	//handle rotation variables
-	switch (_camerar) {
-	default:
-		return;
-	case 0: //no transform, iterate -y
-		xFlipped = false;
-		yFlipped = false;
-		xySwap = false;
-		xmod = 0;
-		ymod = -1;
-		xbound = -2; //arb. unreachable val
-		ybound = -1;
-		break;
-	case 2: //both flip, iterate +y
-		xFlipped = true;
-		yFlipped = true;
-		xySwap = false;
-		xmod = 0;
-		ymod = 1;
-		xbound = -2; //arb. unreachable val
-		ybound = _elevations.at(0).at(0).size();
-		break;
-	case 1:
-		xFlipped = false;
-		yFlipped = true;
-		xySwap = true;
-		xmod = -1;
-		ymod = 0;
-		xbound = -1;
-		ybound = -2; //arb. unreachable val
-		break;
-	case 3:
-		xFlipped = true;
-		yFlipped = false;
-		xySwap = true;
-		xmod = 1;
-		ymod = 0;
-		xbound = _elevations.at(0).size();
-		ybound = -2; //arb. unreachable val
-		break;
-	}
+	//anything we dont need to fidn in the loop
+	unsigned int xsize = _elevations.at(0).size();
+	unsigned int ysize = _elevations.at(0).at(0).size();
 
 	for (i = _camerax; i < globals::tWidth + _camerax; i++) {
 		for (j = _cameray; j < globals::tHeight + _cameray; j++) {
-			//xyz are current voxel's pos in vector space
-			if (!xySwap) {
-				x = xFlipped ? _elevations.at(0).size() - i - 1 : i;
-				y = yFlipped ? _elevations.at(0).at(0).size() - j - 1 : j;
-			}
-			else {
-				y = yFlipped ? _elevations.at(0).size() - i - 1 : i;
-				x = xFlipped ? _elevations.at(0).at(0).size() - j - 1 : j;
-			}
-			int z = std::min((int)_elevations.size() - 1, _camerah);
+			x = i;
+			y = j;
+			int z = zHeight;
 
 			//break if outside of drawable set, or forward if along front face
-			if (x < 0 || x > _elevations.at(0).size() - 1) {
+			
+			if (x < 0 || x > xsize - 1) {
 				continue;
 			}
-			if (y < 0 || y > _elevations.at(0).at(0).size() - 1) {
-				if (y - z <= _elevations.at(0).at(0).size()) {
-					y = _elevations.at(0).at(0).size() - 1;
-					z -= _elevations.at(0).at(0).size() - y;
+			if (y < 0 || y > ysize - 1) {
+				if (y - z <= ysize) {
+					y = ysize - 1;
+					z -= ysize - y;
 					drawSide = true;
 				}
 				else
@@ -194,32 +155,28 @@ void TileHandler::drawRTwithRotToScreen(std::vector<std::vector<Tile*>>* screen)
 			while (true) {
 				//check if out of bounds
 				if (z < 0) {
-					screen->at(i - _camerax).at(j - _cameray) = new Tile(u'ÅE');
-					//drawSingleTile(&Tile(u'ÅE'), i - _camerax, j - _cameray);
+					screen->at(i - _camerax).at(j - _cameray) = &_zBoundTile;
 					break;
 				}
 				//the top of the tile
 				auto currVox = &_elevations.at(z).at(x).at(y);
 				//chech if drawing from front of drawbox
 				if (!drawSide) {
-					if (_elevations.at(z).at(x).at(y).topTile.character != u' ') {
+					if (currVox->topTile.character != u' ') {
 						screen->at(i - _camerax).at(j - _cameray) = &currVox->topTile;
-						//1drawSingleTile(&currVox->topTile, i - _camerax, j - _cameray);
 						break;
 					}
 					//the front face of the tile one further back
-					x += xmod;
 					y += ymod;
-					if (y == ybound || x == xbound) {
+					if (y == ybound) {
 						break;
 					}
 				}
 				drawSide = false;
 
 				currVox = &_elevations.at(z).at(x).at(y);
-				if (_elevations.at(z).at(x).at(y).sideTile.character != u' ') {
+				if (currVox->sideTile.character != u' ') {
 					screen->at(i - _camerax).at(j - _cameray) = &currVox->sideTile;
-					//1drawSingleTile(&currVox->sideTile, i - _camerax, j - _cameray);
 					break;
 				}
 
@@ -275,47 +232,6 @@ void TileHandler::drawSingleTile(Tile* tile, int xpos, int ypos) {
 	SDL_RenderCopy(Window::renderer, spriteptr, 0, &_textRect);
 }
 
-void TileHandler::drawVoxelSet(std::vector<std::vector<Voxel>>* vectorset, int x, int y) {
-	//handle right and bottom clip
-	int w = vectorset->size();
-	if (w == 0)
-		return;
-	int h = vectorset->at(0).size();
-	if (w + x > globals::tWidth)
-		w = globals::tWidth - x;
-	if (h + y > globals::tHeight)
-		h = globals::tHeight - y + 1;
-
-	//handle left and top clip
-	int srcxoff = std::max(-x, 0);
-	int srcyoff = std::max(-y, 0);
-
-	//		###atm do all wall pass then all floor pass. optimize please##
-	for (int j = h - 1; j >= 0; j--) {
-		for (int i = srcxoff; i < w; i++) {
-			//printf("i:%d, j:%d\n", i, j);
-			Tile* a = &vectorset->at(i).at(j).sideTile;
-			if (a->character == 0)
-				continue;
-			drawSingleTile(a, x + (i % w), y + j);
-
-		}
-	}
-	//i and j iterate through target texture
-	for (int j = h - 1; j >= 0; j--) {
-		for (int i = srcxoff; i < w; i++) {
-			//printf("i:%d, j:%d\n", i, j);
-			Tile* a = &vectorset->at(i).at(j).topTile;
-			if (a->character == 0)
-				continue;
-			drawSingleTile(a, x + (i % w), y + j - 1);
-
-		}
-	}
-	//reset clear color at end
-	SDL_SetRenderDrawColor(Window::renderer, 0, 0, 0, 255);
-}
-
 TTF_Font* TileHandler::loadFont(const std::string fontPath, int fontSize) {
 	TTF_Font* font = TTF_OpenFont(fontPath.c_str(), fontSize);
 	if (!font)
@@ -365,48 +281,6 @@ void TileHandler::initVoxelSetVoxels(std::vector<std::vector<Voxel>>* destTileSe
 	destTileSet->resize(w, b);
 	destTileSet->resize(40, c);
 }
-
-//void TileHandler::makeString(const char16_t* string, Tile* destTileSet, int x, int y, int w, int h, bool smartWordCut) {
-//	//i is the index of the string, posi is the index in physical space
-//	int i = 0;
-//	int posi = 0;
-//	//make everything fit
-//	if (w == 0 || x + w > globals::tWidth)
-//		w = globals::tWidth - x;
-//	if (h == 0 || y + h > globals::tHeight)
-//		h = globals::tHeight - h;
-//
-//	while (string[i] != u'\0' && posi < w*h) {
-//		Tile* currtile = &destTileSet[(posi % w + x) + (posi / w + y) * w];
-//		//add dash if across a border
-//		//(whole segment skipped if smart cut is off)
-//		if (smartWordCut && posi % w == w - 1 && string[i] != u' ' && string[i+1] != u' ') {
-//			//just skip to next line if first letter of word
-//			if (string[i-1] == u' ') {
-//				currtile->character = u' ';
-//				posi++;
-//				continue;
-//			}
-//			currtile->character = u'-'; //0x2014;
-//			posi++;
-//			continue;
-//		}
-//		//don't start a line with a space
-//		if (posi % w == 0 && string[i] == u' ') {
-//			i++;
-//			continue;
-//		}
-//		//respect '\n's
-//		if (string[i] == u'\n') {
-//			posi = (posi / w) * w + w;
-//			i++;
-//			continue;
-//		}
-//		currtile->character = string[i];
-//		posi++;
-//		i++;
-//	}
-//}
 
 void TileHandler::makeStringNaive(const char16_t* string, std::vector<std::vector<Tile>>* destTileSet, int x, int y, int w, int h) {
 	//i is the index of the string, posi is the index in physical space
