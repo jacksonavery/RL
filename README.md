@@ -1,4 +1,4 @@
-# A roguelixe project, aptly named 'RL'
+# A roguelixe project
 Doesnt really do anything yet but im getting there.
 
 current plan is an xcom eu/ew -like with actually procedural maps
