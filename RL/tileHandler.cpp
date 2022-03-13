@@ -17,8 +17,8 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input)
 	initTileSetTiles(&_bgTiles, 20, 20);
 	//_bgTiles.at(2).at(2).character = u'Ç†';
 
-	auto a = new TextBox(u"ãMï˚ÇÃóßèÍÇ¡ÇƒâΩÇæÇÎÇ§", 0, 0, globals::tWidth, globals::tHeight);
-	_popups.push_back(a);
+	//auto a = new TextBox(u"ãMï˚ÇÃóßèÍÇ¡ÇƒâΩÇæÇÎÇ§", 0, 0, globals::tWidth, globals::tHeight);
+	//_popups.push_back(a);
 
 	//init voxelset
 	//initVoxelSetVoxels(&_voxels, 5, 2);
@@ -26,14 +26,6 @@ TileHandler::TileHandler(const std::string fontPath, int fontSize, Input* input)
 	//initVoxelSetVoxels(&_voxels, 3, 2);
 	//_elevations.push_back(_voxels);
 	initVoxelSetVoxels(&_voxels, 5, 5);
-	_elevations.push_back(_voxels);
-	_elevations.push_back(_voxels);
-	_elevations.push_back(_voxels);
-	_elevations.push_back(_voxels);
-	_elevations.push_back(_voxels);
-	_elevations.push_back(_voxels);
-	_elevations.push_back(_voxels);
-	_elevations.push_back(_voxels);
 	_elevations.push_back(_voxels);
 	_elevations.push_back(_voxels);
 	_elevations.push_back(_voxels);
@@ -82,11 +74,11 @@ void TileHandler::doCameraMovement(int elapsedTime) {
 void TileHandler::draw() {
 	for (int i = 0; i < _screen.size(); i++) {
 		for (int j = 0; j < _screen.at(0).size(); j++) {
-			_screen.at(i).at(j) = &_transparentTile;
+			_screen.at(i).at(j) = &_zBoundTile;
 		}
 	}
 	
-	//drawRTToScreen(&_screen);
+	drawRTToScreen(&_screen);
 
 	for (int i = 0; i < _popups.size(); i++) {
 		drawTileSetToScreen(&_popups.at(i)->data, &_screen);
@@ -320,4 +312,15 @@ void TileHandler::makeBoundingBox(std::vector<std::vector<Tile>>* destTileSet, b
 	destTileSet->at(w-1).at(0).character = 0x2510 + 3 * isThick;
 	destTileSet->at(0).at(h-1).character = 0x2514 + 3 * isThick;
 	destTileSet->at(w-1).at(h-1).character = 0x2518 + 3 * isThick;
+}
+
+Tile* makeTile(Uint16 character, SDL_Color fgcolor, SDL_Color bgcolor) {
+	Tile* a = new Tile();
+	a->fgcolor = fgcolor;
+	a->bgcolor = bgcolor;
+	a->setChar(character);
+}
+
+void assignTile() {
+
 }

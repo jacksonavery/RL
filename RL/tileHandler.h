@@ -46,6 +46,9 @@ private:
 	//actually draws screen to window
 	void drawScreen(std::vector<std::vector<Tile*>>* screen);
 
+	//##tile modifications##//
+
+
 
 	//update camera pos
 	void doCameraMovement(int elapsedTime);
@@ -55,7 +58,7 @@ private:
 	std::vector<std::vector<std::vector<Voxel>>> _elevations;
 	std::vector<Popup*> _popups;
 
-	std::vector<std::vector<Tile*>> _screen;
+	std::vector<std::vector<SDL_Texture*>> _screen;
 
 
 	TTF_Font* _font;
