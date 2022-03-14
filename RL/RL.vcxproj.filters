@@ -36,6 +36,9 @@
     <ClCompile Include="voxel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BLTWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="window.h">
@@ -66,6 +69,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="colors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BLTWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
