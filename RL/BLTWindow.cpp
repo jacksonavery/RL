@@ -19,7 +19,7 @@ bool BLTWindow::init() {
 	//std::cout << "opening\n";
 	if (!terminal_open())
 		return false;
-	if (!terminal_set("window: title='3', size = 80x45"))
+	if (!terminal_set("window: title='3', size = 80x45, fullscreen = true"))
 		return false;
 	if (!terminal_set("font: fonts/bitmap/nanahyakumanji.png, size=8x8"))
 		return false;
