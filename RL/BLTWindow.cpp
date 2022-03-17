@@ -16,24 +16,35 @@ BLTWindow::~BLTWindow() {
 }
 
 bool BLTWindow::init() {
-	//std::cout << "opening\n";
+	//open terminal
 	if (!terminal_open())
 		return false;
-	if (!terminal_set("window: title='3', size = 80x45, fullscreen = true"))
+	//set window settings
+	if (!terminal_setf("window: title='3', size = %dx%d, fullscreen = true", globals::tWidth, globals::tHeight))
 		return false;
-	if (!terminal_set("font: fonts/bitmap/nanahyakumanji.png, size=8x8"))
+	//load default font (page 437)
+	if (!terminal_set("font: fonts/bitmap/7tkji-basic.png, size=8x8, codepage=437"))
 		return false;
-	//terminal_set("font: fonts/LucidaTypewriterRegular.ttf, size = 16");
+	//katakana
+	if (!terminal_set("0x30a0: fonts/bitmap/7tkji-katakana.png, size=8x8"))
+		return false;
+	//misc symbols
+	if (!terminal_set("0x2600: fonts/bitmap/7tkji-misc-sym.png, size=8x8"))
+		return false;
+	//variant fonts
+	//  TODO: make this work
+	if (!terminal_set("0x61: fonts/bitmap/7tkji-sc.png, size=8x8, name = sc"))
+		return false;
+	
+
 	return true;
 }
 
 void BLTWindow::gameLoop() {
-	//std::cout << "starting loop\n";
 	_input = new Input();
 	//_th = new TileHandler(globals::font, globals::tileSize, _input);
 
 	while (!_closed) {
-		//std::cout << "looping\n";
 		draw();
 		
 		_closed = _input->doEventInput();
@@ -47,6 +58,12 @@ void BLTWindow::gameLoop() {
 
 void BLTWindow::draw() {
 	//std::cout << "drawing\n";
-	terminal_print(1, 1, "when the soulja boy is cranked");
+
+	//all temp stuff, should just call tilehandler's draws
+	for (int i = 0; i < 80 * 45; i++) {
+		terminal_put(i % 80, i / 80, '.');
+	}
+	terminal_print(10, 10, L"ƒl\nƒA");
+	terminal_print(12, 12, L"[font = sc]Cuando No Tienes Las Maidens[/font]");
 	terminal_refresh();
 }
