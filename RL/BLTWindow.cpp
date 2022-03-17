@@ -33,8 +33,8 @@ bool BLTWindow::init() {
 		return false;
 	//variant fonts
 	//  TODO: make this work
-	if (!terminal_set("0x61: fonts/bitmap/7tkji-sc.png, size=8x8, name = sc"))
-		return false;
+	//if (!terminal_set("sc 0x61: fonts/bitmap/7tkji-sc.png, size=8x8"))
+	//	return false;
 	
 
 	return true;
@@ -64,6 +64,7 @@ void BLTWindow::draw() {
 		terminal_put(i % 80, i / 80, '.');
 	}
 	terminal_print(10, 10, L"ƒl\nƒA");
-	terminal_print(12, 12, L"[font = sc]Cuando No Tienes Las Maidens[/font]");
+	terminal_print(12, 12, L"[font = sc][color=red]Plasma Refibrilator[/color][/font]");
+	terminal_print(12, 13, L"Opponent must rest \none turn in order  \nto restart their   \nheart.             ");
 	terminal_refresh();
 }
