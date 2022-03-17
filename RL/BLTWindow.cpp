@@ -20,7 +20,7 @@ bool BLTWindow::init() {
 	if (!terminal_open())
 		return false;
 	//set window settings
-	if (!terminal_setf("window: title='3', size = %dx%d, fullscreen = true", globals::tWidth, globals::tHeight))
+	if (!terminal_setf("window: size = %dx%d", globals::tWidth, globals::tHeight))
 		return false;
 	//load default font (page 437)
 	if (!terminal_set("font: fonts/bitmap/7tkji-basic.png, size=8x8, codepage=437"))
@@ -33,9 +33,8 @@ bool BLTWindow::init() {
 		return false;
 	//variant fonts
 	//  TODO: make this work
-	//if (!terminal_set("sc 0x61: fonts/bitmap/7tkji-sc.png, size=8x8"))
+	//if (!terminal_set("0x61: fonts/bitmap/7tkji-sc.png, size=8x8"))
 	//	return false;
-	
 
 	return true;
 }
@@ -64,7 +63,7 @@ void BLTWindow::draw() {
 		terminal_put(i % 80, i / 80, '.');
 	}
 	terminal_print(10, 10, L"ƒl\nƒA");
-	terminal_print(12, 12, L"[font = sc][color=red]Plasma Refibrilator[/color][/font]");
+	terminal_print(12, 12, L"[font = sc]Plasma Refibrilator[/font]");
 	terminal_print(12, 13, L"Opponent must rest \none turn in order  \nto restart their   \nheart.             ");
 	terminal_refresh();
 }
