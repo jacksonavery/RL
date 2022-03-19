@@ -22,20 +22,6 @@ bool BLTWindow::init() {
 	//set window settings
 	if (!terminal_setf("window: size = %dx%d", globals::tWidth, globals::tHeight))
 		return false;
-	//load default font (page 437)
-	if (!terminal_set("font: fonts/bitmap/7tkji-basic.png, size=8x8, codepage=437"))
-		return false;
-	//katakana
-	if (!terminal_set("0x30a0: fonts/bitmap/7tkji-katakana.png, size=8x8"))
-		return false;
-	//misc symbols
-	if (!terminal_set("0x2600: fonts/bitmap/7tkji-misc-sym.png, size=8x8"))
-		return false;
-	//variant fonts
-	//  TODO: make this work
-	//if (!terminal_set("0x61: fonts/bitmap/7tkji-sc.png, size=8x8"))
-	//	return false;
-
 	return true;
 }
 
@@ -56,14 +42,21 @@ void BLTWindow::gameLoop() {
 }
 
 void BLTWindow::draw() {
-	//std::cout << "drawing\n";
-
 	//all temp stuff, should just call tilehandler's draws
 	for (int i = 0; i < 80 * 45; i++) {
 		terminal_put(i % 80, i / 80, '.');
 	}
 	terminal_print(10, 10, L"ƒl\nƒA");
-	terminal_print(12, 12, L"[font = sc]Plasma Refibrilator[/font]");
-	terminal_print(12, 13, L"Opponent must rest \none turn in order  \nto restart their   \nheart.             ");
+	for (int i = 0; i < 96; i++) {
+		terminal_put(i % 16, i / 16, L'ƒA' - 2 + i);
+	}
+
+	wchar_t aaa[] = L"=[font=sc]Plasma Refibrilator[/font]=";
+	wchar_t bbb[] = L"Opponent must spend a turn restarting their heart. Or whatever it is.";
+	//toSC(aaa);
+	terminal_print(19, 20, aaa);
+	terminal_print_ext(19, 21, 22, 0, 0, bbb);
+	terminal_print(20, 20, L"[font=sc]The Terminal Do be Supporting Smallcaps Tho[/font]");
+
 	terminal_refresh();
 }
