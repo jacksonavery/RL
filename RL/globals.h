@@ -15,15 +15,3 @@ namespace globals {
 	//const std::string font = "fonts/PixelMplus10-Regular.ttf";
 	const std::string font = "fonts/SourceHanSerif-VF.ttf";
 }
-
-
-
-/*
- * fades between col1 and col2. mix is [0-255]
- */
-//col colmix(const col col1, const col col2, const char mix) {
-//	char R = col1.r * (255 - mix) + col2.r * (mix);
-//	char G = col1.g * (255 - mix) + col2.g * (mix);
-//	char B = col1.b * (255 - mix) + col2.b * (mix);
-//	return col{ R,G,B };
-//}
