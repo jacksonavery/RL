@@ -11,7 +11,7 @@ namespace globals {
 
 	const int MOVE_DELAY = FRAME_TIME * 3;
 
-	const std::string font = "fonts/PixelMplus12-Regular.ttf";
+	//const std::string font = "fonts/PixelMplus12-Regular.ttf";
 	//const std::string font = "fonts/PixelMplus10-Regular.ttf";
-	//const std::string font = "fonts/SourceHanSerif-VF.ttf";
+	const std::string font = "fonts/SourceHanSerif-VF.ttf";
 }

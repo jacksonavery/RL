@@ -1,14 +1,15 @@
 #pragma once
-#include <SDL.h>
+#include <BearLibTerminal.h>
 #include <map>
 
 class Input {
 public:
 	Input();
 
-	bool isKeyPressed(SDL_Scancode key);
-	bool isKeyHeld(SDL_Scancode key);
-	bool isKeyReleased(SDL_Scancode key);
+	bool isKeyPressed(const int key);
+	bool isKeyHeld(const int key);
+	bool isKeyReleased(const int key);
+	void getMousePos(int* x, int* y);
 
 	bool anyKeyHeld();
 
@@ -16,10 +17,11 @@ public:
 	bool doEventInput();
 private:
 	void resetInput();
-	void handleKeyPress(const SDL_Event& ev);
-	void handleKeyRelease(const SDL_Event& ev);
+	void handleKeyPress(int key);
+	void handleKeyRelease(int key);
 
-	std::map<SDL_Scancode, bool> _pressedKeys;
-	std::map<SDL_Scancode, bool> _heldKeys;
-	std::map<SDL_Scancode, bool> _releasedKeys;
+	std::map<int, bool> _pressedKeys;
+	std::map<int, bool> _heldKeys;
+	std::map<int, bool> _releasedKeys;
+	int _mouseX, _mouseY;
 };
