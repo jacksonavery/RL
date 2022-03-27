@@ -336,3 +336,5 @@ ASALocalRun/
 #don't publish other people's libraries
 deps/**
 *.kra
+*.png
+RL/fonts/bitmap/7tkji-basic.png
