@@ -39,6 +39,9 @@
     <ClCompile Include="BLTWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="uibox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="window.h">
@@ -72,6 +75,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BLTWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="uibox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="geometric character points.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
