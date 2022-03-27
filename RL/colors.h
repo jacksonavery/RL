@@ -1,6 +1,32 @@
 #pragma once
-#include <SDL.h>
+#include <BearLibTerminal.h>
+namespace colors {
+	const color_t black = 0xff0e1214;
+	const color_t white = 0xfff6f7f3;
+	const color_t rust = 0xff9c3c31;
+	const color_t lblue = 0xff4fa8bc;
+	const color_t purple = 0xff7d4a9f;
+	const color_t dkgrn = 0xff5d8845;
+	const color_t dkblue = 0xff393ba3;
+	const color_t skin = 0xffe5cd7a;
+	const color_t brown = 0xff996732;
+	const color_t maroon = 0xff4c0c27;
+	const color_t skinsh = 0xffc27765;
+	const color_t dkgray = 0xff444848;
+	const color_t gray = 0xff868986;
+	const color_t foam = 0xffc8be294;
+	const color_t pink = 0xffe279d4;
+	const color_t lgtgray = 0xffd3d4d2;
+	
+	const color_t indexed[16] = { black, white, rust, lblue,
+									purple, dkgrn, dkblue, skin,
+									brown, maroon, skinsh, dkgray,
+									gray, foam, pink, lgtgray };
+}
 
+
+#pragma once
+#include <SDL.h>
 namespace cols {
 	const SDL_Color aliceblue = { 240, 248, 255, 255 };
 	const SDL_Color antiquewhite = { 250, 235, 215, 255 };
