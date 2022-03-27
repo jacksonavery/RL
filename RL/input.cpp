@@ -8,9 +8,14 @@ bool Input::doEventInput() {
 	resetInput();
 	while (terminal_has_input()) {
 		int key = terminal_read();
-		//printf("registered %d", key);
+		//printf("registered %d\n", key);
 
-		if (key < TK_KEY_RELEASED) {
+		if (key == TK_MOUSE_MOVE) {
+			_mouseX = terminal_state(TK_MOUSE_X);
+			_mouseY = terminal_state(TK_MOUSE_Y);
+			//printf("%d %d\n", _mouseX, _mouseY);
+		}
+		else if (key < TK_KEY_RELEASED) {
 			//printf("as pressed\n", key);
 			handleKeyPress(key);
 		}
@@ -43,14 +48,19 @@ bool Input::anyKeyHeld() {
 	return (_heldKeys.size() > 0);
 }
 
-bool Input::isKeyPressed(int key) {
+bool Input::isKeyPressed(const int key) {
 	return _pressedKeys.count(key);
 }
 
-bool Input::isKeyHeld(int key) {
+bool Input::isKeyHeld(const int key) {
 	return _heldKeys.count(key) && _heldKeys.at(key);
 }
 
-bool Input::isKeyReleased(int key) {
+bool Input::isKeyReleased(const int key) {
 	return _releasedKeys.count(key);
+}
+
+void Input::getMousePos(int* x, int* y) {
+	*x = _mouseX;
+	*y = _mouseY;
 }

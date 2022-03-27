@@ -6,9 +6,10 @@ class Input {
 public:
 	Input();
 
-	bool isKeyPressed(int key);
-	bool isKeyHeld(int key);
-	bool isKeyReleased(int key);
+	bool isKeyPressed(const int key);
+	bool isKeyHeld(const int key);
+	bool isKeyReleased(const int key);
+	void getMousePos(int* x, int* y);
 
 	bool anyKeyHeld();
 
@@ -22,4 +23,5 @@ private:
 	std::map<int, bool> _pressedKeys;
 	std::map<int, bool> _heldKeys;
 	std::map<int, bool> _releasedKeys;
+	int _mouseX, _mouseY;
 };
