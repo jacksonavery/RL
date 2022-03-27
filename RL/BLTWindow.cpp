@@ -96,6 +96,8 @@ void BLTWindow::draw() {
 		terminal_color("white");
 		if (_input->isKeyHeld(TK_MOUSE_LEFT))
 			terminal_color("red");
+		if (_input->isKeyHeld(TK_MOUSE_RIGHT))
+			terminal_color("blue");
 		terminal_put(x, y+1, L'^');
 		if (y == globals::tHeight-1)
 			terminal_put(x, y - 1, L'v');
