@@ -16,12 +16,12 @@ namespace colors {
 	const color_t gray = 0xff868986;
 	const color_t foam = 0xffc8be294;
 	const color_t pink = 0xffe279d4;
-	const color_t lgtgray = 0xffd3d4d2;
+	const color_t lgray = 0xffd3d4d2;
 	
 	const color_t indexed[16] = { black, white, rust, lblue,
 									purple, dkgrn, dkblue, skin,
 									brown, maroon, skinsh, dkgray,
-									gray, foam, pink, lgtgray };
+									gray, foam, pink, lgray };
 }
 
 
