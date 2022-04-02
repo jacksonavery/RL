@@ -21,22 +21,10 @@
     <ClCompile Include="window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tileHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="textbox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="voxel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BLTWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="uibox.cpp">
@@ -53,28 +41,13 @@
     <ClInclude Include="tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tileHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="popup.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="textbox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="voxel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="level.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="colors.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BLTWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="uibox.h">

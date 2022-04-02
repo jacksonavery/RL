@@ -1,10 +1,9 @@
 #pragma once
-#include <SDL_ttf.h>
+#include <BearLibTerminal.h>
 
 struct Tile {
-	Tile();
-	Tile(Uint16 character, SDL_Color fgcolor = SDL_Color{255, 255, 255, 255}, SDL_Color bgcolor = SDL_Color{ 0, 0, 0, 255 });
+	Tile(uint16_t character, color_t fgcolor = color_from_argb(255, 255, 255, 255), color_t bgcolor = color_from_argb(0, 0, 0, 255));
 
-	SDL_Color fgcolor, bgcolor;
-	Uint16 character;
+	color_t fgcolor, bgcolor;
+	uint16_t character;
 };

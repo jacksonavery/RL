@@ -1,16 +1,15 @@
 #pragma once
-#include <SDL.h>
+#include <BearLibTerminal.h>
 #include <string>
 #include <iostream>
 #include "input.h"
-#include "tileHandler.h"
+//#include "uibox.h"
+//#include "tileHandler.h"
 
-class Window {
+class BLTWindow {
 public:
-	Window(const std::string& Title, int width, int height);
-	~Window();
-
-	static SDL_Renderer* renderer;
+	BLTWindow(const std::string& Title, int width, int height);
+	~BLTWindow();
 private:
 	bool init();
 
@@ -23,9 +22,6 @@ private:
 	int _height = 600;
 
 	bool _closed = false;
-
-	SDL_Window* _window = nullptr;
 	Input* _input = nullptr;
-
-	TileHandler* _th = nullptr;
+	//TileHandler* _th = nullptr;
 };

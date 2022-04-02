@@ -1,5 +1,5 @@
 #include "globals.h"
-#include "BLTwindow.h"
+#include "window.h"
 #include <iostream>
 
 int main(int argc, char* argv[]) {
