@@ -13,7 +13,7 @@ public:
 
 	bool anyKeyHeld();
 
-	//return false to quit game
+	//return true to quit game
 	bool doEventInput();
 private:
 	void resetInput();
