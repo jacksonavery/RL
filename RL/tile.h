@@ -1,9 +1,12 @@
 #pragma once
 #include <BearLibTerminal.h>
+#include "colors.h"
+#include "geometric character points.h"
 
 struct Tile {
-	Tile(uint16_t character, color_t fgcolor = color_from_argb(255, 255, 255, 255), color_t bgcolor = color_from_argb(0, 0, 0, 255));
+	Tile();
+	Tile(int character, color_t fgcolor, color_t bgcolor);
 
 	color_t fgcolor, bgcolor;
-	uint16_t character;
+	int character;
 };

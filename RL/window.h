@@ -3,8 +3,8 @@
 #include <string>
 #include <iostream>
 #include "input.h"
+#include "editor.h"
 //#include "uibox.h"
-//#include "tileHandler.h"
 
 class BLTWindow {
 public:
@@ -23,5 +23,7 @@ private:
 
 	bool _closed = false;
 	Input* _input = nullptr;
-	//TileHandler* _th = nullptr;
+	Editor* _handler = nullptr;
+
+	int _ET = 0;
 };

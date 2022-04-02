@@ -29,11 +29,14 @@ bool BLTWindow::init() {
 
 void BLTWindow::gameLoop() {
 	_input = new Input();
-	//_th = new TileHandler(globals::font, globals::tileSize, _input);
+	_handler = new Editor(_input, 80, 45);
+
+	int LAST_UPDATE_TIME = SDL_GetTicks();
+	int startTime = LAST_UPDATE_TIME;
 
 	while (!_closed) {
+		update(-1);
 		draw();
-		
 		_closed = _closed || _input->doEventInput();
 	}
 
@@ -43,25 +46,14 @@ void BLTWindow::gameLoop() {
 	delete _input;
 }
 
+void BLTWindow::update(int elapsedTime) {
+	_handler->update(elapsedTime);
+}
+
 void BLTWindow::draw() {
-	//all temp stuff, should just call tilehandler's draws
 	terminal_bkcolor(colors::black);
 	terminal_clear();
-	terminal_color(colors::indexed[15]);
-	terminal_print_ext(20, 23, 40, 45, TK_ALIGN_CENTER, L"agraria");
-
-	//mouse code
-	{
-		int x, y; 
-		_input->getMousePos(&x, &y);
-		terminal_color(colors::indexed[13]);
-		if (_input->isKeyHeld(TK_MOUSE_LEFT))
-			terminal_color(colors::lblue);
-		if (_input->isKeyHeld(TK_MOUSE_RIGHT))
-			terminal_color(colors::rust);
-		terminal_put(x + 1, y, L']');
-		terminal_put(x - 1, y, L'[');
-	}
+	_handler->draw(0,0);
 
 	terminal_refresh();
 }
