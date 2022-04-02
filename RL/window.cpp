@@ -5,7 +5,7 @@
 #include "colors.h"
 #include "geometric character points.h"
 
-BLTWindow::BLTWindow(const std::string& title, int width, int height) :
+Window::Window(const std::string& title, int width, int height) :
 	_title(title), _width(width), _height(height) {
 	if (!init())
 		terminal_close();
@@ -13,11 +13,11 @@ BLTWindow::BLTWindow(const std::string& title, int width, int height) :
 	gameLoop();
 }
 
-BLTWindow::~BLTWindow() {
+Window::~Window() {
 	//今しない
 }
 
-bool BLTWindow::init() {
+bool Window::init() {
 	//open terminal
 	if (!terminal_open())
 		return false;
@@ -27,17 +27,24 @@ bool BLTWindow::init() {
 	return true;
 }
 
-void BLTWindow::gameLoop() {
+void Window::gameLoop() {
 	_input = new Input();
 	_handler = new Editor(_input, 80, 45);
 
-	int LAST_UPDATE_TIME = SDL_GetTicks();
-	int startTime = LAST_UPDATE_TIME;
+	//rudimentary fps tracker
+	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+	std::chrono::duration<double> elapsedTime;
 
 	while (!_closed) {
-		update(-1);
+		elapsedTime = end - start;
+		start = std::chrono::steady_clock::now();
+		
+		update(elapsedTime.count());
 		draw();
 		_closed = _closed || _input->doEventInput();
+
+		end = std::chrono::steady_clock::now();
 	}
 
 	terminal_close();
@@ -46,11 +53,11 @@ void BLTWindow::gameLoop() {
 	delete _input;
 }
 
-void BLTWindow::update(int elapsedTime) {
+void Window::update(int elapsedTime) {
 	_handler->update(elapsedTime);
 }
 
-void BLTWindow::draw() {
+void Window::draw() {
 	terminal_bkcolor(colors::black);
 	terminal_clear();
 	_handler->draw(0,0);

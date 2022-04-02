@@ -2,14 +2,15 @@
 #include <BearLibTerminal.h>
 #include <string>
 #include <iostream>
+#include <chrono>
 #include "input.h"
 #include "editor.h"
 //#include "uibox.h"
 
-class BLTWindow {
+class Window {
 public:
-	BLTWindow(const std::string& Title, int width, int height);
-	~BLTWindow();
+	Window(const std::string& Title, int width, int height);
+	~Window();
 private:
 	bool init();
 
