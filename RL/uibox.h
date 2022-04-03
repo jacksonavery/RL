@@ -1,18 +1,20 @@
 #pragma once
 
-#include "geometric character points.h"
 #include <cstdio>
 #include <string>
 #include <BearLibTerminal.h>
+#include "geometric character points.h"
+#include "colors.h"
 
 #define UIBOX_OUTLINE_CENTERED 0
 #define UIBOX_OUTLINE_OUTER 1
 
 class UIBox {
 public:
-	UIBox(int x, int y, int w, int h, const wchar_t* message, const wchar_t* title = L"", int outlinestyle = UIBOX_OUTLINE_CENTERED);
+	UIBox();
+	UIBox(int w, int h, const wchar_t* message, const wchar_t* title = L"", int outlinestyle = UIBOX_OUTLINE_CENTERED);
 	~UIBox();
-	void draw();
+	void draw(int x, int y);
 	/*
 	 * expects one of UIBOX_OUTLINE_CENTERED (def), UIBOX_OUTLINE_OUTER
 	 */
@@ -27,8 +29,8 @@ private:
 	wchar_t _left;
 	wchar_t _right;
 
-	int _x;
-	int _y;
+	//int _x;
+	//int _y;
 	int _w;
 	int _h;
 	std::wstring _message;
