@@ -16,20 +16,24 @@ Editor::~Editor() {
 }
 
 void Editor::update(int elapsedTime) {
-	if (_input->isKeyHeld(TK_A))
-		_cx--;
-	if (_input->isKeyHeld(TK_D))
-		_cx++;
-	if (_input->isKeyHeld(TK_W))
-		_cy--;
-	if (_input->isKeyHeld(TK_S))
-		_cy++;
+	//movement.
+	if (_input->isKeyHeld(TK_MOUSE_MIDDLE)) {
+		bool pressed = false;
+		doMMBMove();
+	}
+	
+	//mouse pencil. TODO: refactor to updatePencil and so on (prob updateTool(), which will get _currtool)
+	_input->getMousePos(&_mx, &_my);
+
+	if (_input->isKeyHeld(TK_MOUSE_LEFT)) {
+		storeSingleTile(_mx + _cx, _my + _cy, &_brushTile);
+	}
+	if (_input->isKeyHeld(TK_MOUSE_RIGHT)) {
+		_brushTile = getTile(_mx + _cx, _my + _cy);
+	}
 }
 
 void Editor::draw() {
-	terminal_bkcolor(colors::black);
-	terminal_clear();
-
 	//the outline UIBox
 	_outline.draw(-_cx - 1, -_cy - 1);
 
@@ -40,36 +44,22 @@ void Editor::draw() {
 		}
 	}
 
-	//mouse code.
-	{
-		int mx, my;
-		_input->getMousePos(&mx, &my);
-
-		if (_input->isKeyHeld(TK_MOUSE_LEFT)) {
-			//_tiles[mx + my * _w].bgcolor = colors::indexed[_color];
-			storeSingleTile(mx + _cx, my + _cy, &_brushTile);
-		}
-		if (_input->isKeyHeld(TK_MOUSE_RIGHT)) {
-			_brushTile = getTile(mx + _cx, my + _cy);
-		}
-		//if (_input->isKeyPressed(TK_SPACE)) {
-		//	_state = EDITOR_STATE_PICKER;
-		//}
-		//the preview char on cursor
+	//the preview char on cursor. TODO: move into drawPencil or however
+	_input->getMousePos(&_mx, &_my);
+	if (areValidCoords(_mx + _cx, _my + _cy)) {
 		terminal_layer(0);
 		terminal_color(_brushTile.fgcolor);
 		terminal_bkcolor(_brushTile.bgcolor);
-		terminal_put(mx, my, _brushTile.character);
-		
-
-		// cursor drawing code.consider abstracting for arbitrary cursor styles
-		terminal_layer(1);
-		terminal_color(colors::white);
-		terminal_put(mx + 1, my, L']');
-		terminal_put(mx - 1, my, L'[');
+		terminal_put(_mx, _my, _brushTile.character);
 	}
+	
+	// cursor drawing code. TODO: abstracting for arbitrary cursor styles
+	terminal_layer(1);
+	terminal_color(colors::white);
+	terminal_put(_mx + 1, _my, L']');
+	terminal_put(_mx - 1, _my, L'[');
+
 	terminal_layer(0);
-	terminal_refresh();
 }
 
 void Editor::drawSingleTile(int x, int y, Tile* tile) {   
@@ -97,4 +87,17 @@ Tile Editor::getTile(int x, int y) {
 	if (!areValidCoords(x, y))
 		return Tile();
 	return _tiles[x + y * _w];
+}
+
+void Editor::doMMBMove() {
+	//set past coords on original MMB press
+	if (_input->isKeyPressed(TK_MOUSE_MIDDLE)) {
+		_fmx = _mx;
+		_fmy = _my;
+		_fcx = _cx;
+		_fcy = _cy;
+	}
+	//update based on current MMB pos
+	_cx = _fcx + _fmx - _mx;
+	_cy = _fcy + _fmy - _my;
 }

@@ -22,6 +22,8 @@ private:
 	bool storeSingleTile(int x, int y, Tile* tile);
 	//get a tile at a coordinate
 	Tile getTile(int x, int y);
+	//move camera with the mouse
+	void doMMBMove();
 	
 	//the current canvas
 	std::vector<Tile> _tiles;
@@ -35,4 +37,9 @@ private:
 	Tile _brushTile;
 	//camera coords
 	int _cx, _cy;
+	//mouse coords
+	int _mx, _my;
+	//old mouse coords for MMB movement, and camera equiv
+	int _fmx, _fmy;
+	int _fcx, _fcy;
 };
