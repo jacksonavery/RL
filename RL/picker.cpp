@@ -1,9 +1,11 @@
 #include "picker.h"
 
 Picker::Picker(Tile* currtile, Input* input) : _currTile(currtile), _input(input) {
-	_w = CPICKER_WIDTH;
-	_h = (colors::numcolors + CPICKER_WIDTH - 1) / CPICKER_WIDTH;
-	_uibox = UIBox(_w + 2, _h + 2, L"", L"colors");
+	_colw = COLPICKER_WIDTH;
+	_colh = (colors::numcolors + COLPICKER_WIDTH - 1) / COLPICKER_WIDTH;
+	_colbox = UIBox(_colw + 2, _colh + 2, L"", L"cols");
+
+	_charbox = UIBox(CHARPICKER_WIDTH + 2, CHARPICKER_HEIGHT + 2, L"", L"chars");
 }
 
 Picker::~Picker() {
@@ -11,21 +13,29 @@ Picker::~Picker() {
 }
 
 void Picker::update(int mxl, int myl) {
-	mxl -= CPICKER_OFFS_X + 1;
-	myl -= CPICKER_OFFS_Y + 1;
+	// ==color box==
+	mxl -= COLPICKER_OFFS_X + 1;
+	myl -= COLPICKER_OFFS_Y + 1;
 	if (_input->isKeyPressed(TK_MOUSE_LEFT))
-		if (mxl + myl * CPICKER_WIDTH < colors::numcolors)
-			_currTile->fgcolor = mxl + myl * CPICKER_WIDTH;
+		if (mxl < _colw && mxl >= 0 && myl >= 0 && mxl + myl * _colw < colors::numcolors)
+			_currTile->fgcolor = mxl + myl * _colw;
 	if (_input->isKeyPressed(TK_MOUSE_RIGHT))
-		if (mxl + myl * CPICKER_WIDTH < colors::numcolors)
-			_currTile->bgcolor = mxl + myl * CPICKER_WIDTH;
+		if (mxl < _colw && mxl >= 0 && myl >= 0 && mxl + myl * _colw < colors::numcolors)
+			_currTile->bgcolor = mxl + myl * _colw;
+	// ==chars box==
+	// TODO: this can't be right but it works atm
+	mxl += COLPICKER_OFFS_X - CHARPICKER_OFFS_X + 4;
+	myl += COLPICKER_OFFS_Y - CHARPICKER_OFFS_Y;
+	if (_input->isKeyPressed(TK_MOUSE_LEFT))
+		if (mxl < CHARPICKER_WIDTH && mxl >= 0 && myl >= 0 && myl < CHARPICKER_HEIGHT)
+			_currTile->character = 0xE000 + mxl + myl * CHARPICKER_WIDTH;
 }
 
 void Picker::draw(int x, int y) {
-	x += CPICKER_OFFS_X;
-	y += CPICKER_OFFS_Y;
-	//draw bg box
-	_uibox.draw(x, y);
+	// ==color box==
+	x += COLPICKER_OFFS_X;
+	y += COLPICKER_OFFS_Y;
+	_colbox.draw(x, y);
 	//add colors
 	for (int i = 0; i < colors::numcolors; i++) {
 		int currchar = CHAR_EMPTY;
@@ -41,7 +51,15 @@ void Picker::draw(int x, int y) {
 		else if (i == _currTile->bgcolor) {
 			currchar = L'b';
 		}
-
-		terminal_put(x + 1 + i % CPICKER_WIDTH, y + 1 + i / CPICKER_WIDTH, currchar);
+		terminal_put(x + 1 + i % _colw, y + 1 + i / _colw, currchar);
+	}
+	// ==char box==
+	x += CHARPICKER_OFFS_X - COLPICKER_OFFS_X;
+	y += CHARPICKER_OFFS_Y - COLPICKER_OFFS_Y;
+	_charbox.draw(x, y);
+	terminal_bkcolor(colors::indexed[_currTile->bgcolor]);
+	terminal_color(colors::indexed[_currTile->fgcolor]);
+	for (int i = 0; i < CHARPICKER_WIDTH * CHARPICKER_HEIGHT; i++) {
+		terminal_put(x + 1 + i % CHARPICKER_WIDTH, y + 1 + i / CHARPICKER_WIDTH, 0xE000+i);
 	}
 }

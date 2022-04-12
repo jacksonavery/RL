@@ -99,6 +99,14 @@ void Editor::drawDirect() {
 			drawSingleTile(i - _cx, j - _cy, &_tiles[i + j * _w]);
 		}
 	}
+	//the preview char on cursor. TODO: move?
+	_input->getMousePos(&_mx, &_my);
+	if (areValidCoords(_mx + _cx, _my + _cy, _w, _h)) {
+		terminal_layer(0);
+		terminal_color(colors::indexed[_brushTile.fgcolor]);
+		terminal_bkcolor(colors::indexed[_brushTile.bgcolor]);
+		terminal_put(_mx, _my, _brushTile.character);
+	}
 }
 
 void Editor::drawPicker() {
@@ -106,14 +114,6 @@ void Editor::drawPicker() {
 }
 
 void Editor::drawCursor() {
-	//the preview char on cursor. TODO: move into drawPencil or however
-	_input->getMousePos(&_mx, &_my);
-	if (areValidCoords(_mx + _cx, _my + _cy, _w, _h) && _state == states::direct) {
-		terminal_layer(0);
-		terminal_color(colors::indexed[_brushTile.fgcolor]);
-		terminal_bkcolor(colors::indexed[_brushTile.bgcolor]);
-		terminal_put(_mx, _my, _brushTile.character);
-	}
 	// cursor drawing code. TODO: abstracting for arbitrary cursor styles
 	terminal_layer(1);
 	terminal_color(colors::white);
