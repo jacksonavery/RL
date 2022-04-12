@@ -5,7 +5,9 @@
 #include "tile.h"
 #include "input.h"
 
-#define PICKER_WIDTH 6
+#define CPICKER_WIDTH 6
+#define CPICKER_OFFS_X -3
+#define CPICKER_OFFS_Y -2
 
 // unique color/char picker for editor
 class Picker {

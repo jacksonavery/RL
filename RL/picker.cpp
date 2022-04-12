@@ -1,8 +1,8 @@
 #include "picker.h"
 
 Picker::Picker(Tile* currtile, Input* input) : _currTile(currtile), _input(input) {
-	_w = PICKER_WIDTH;
-	_h = (colors::numcolors + PICKER_WIDTH - 1) / PICKER_WIDTH;
+	_w = CPICKER_WIDTH;
+	_h = (colors::numcolors + CPICKER_WIDTH - 1) / CPICKER_WIDTH;
 	_uibox = UIBox(_w + 2, _h + 2, L"", L"colors");
 }
 
@@ -11,18 +11,19 @@ Picker::~Picker() {
 }
 
 void Picker::update(int mxl, int myl) {
-	mxl--, myl--;
+	mxl -= CPICKER_OFFS_X + 1;
+	myl -= CPICKER_OFFS_Y + 1;
 	if (_input->isKeyPressed(TK_MOUSE_LEFT))
-		if (mxl + myl * PICKER_WIDTH < colors::numcolors)
-			_currTile->fgcolor = mxl + myl * PICKER_WIDTH;
+		if (mxl + myl * CPICKER_WIDTH < colors::numcolors)
+			_currTile->fgcolor = mxl + myl * CPICKER_WIDTH;
 	if (_input->isKeyPressed(TK_MOUSE_RIGHT))
-		if (mxl + myl * PICKER_WIDTH < colors::numcolors)
-			_currTile->bgcolor = mxl + myl * PICKER_WIDTH;
+		if (mxl + myl * CPICKER_WIDTH < colors::numcolors)
+			_currTile->bgcolor = mxl + myl * CPICKER_WIDTH;
 }
 
 void Picker::draw(int x, int y) {
-	x -= PICKER_WIDTH + 2;
-	y -= 2;
+	x += CPICKER_OFFS_X;
+	y += CPICKER_OFFS_Y;
 	//draw bg box
 	_uibox.draw(x, y);
 	//add colors
@@ -41,6 +42,6 @@ void Picker::draw(int x, int y) {
 			currchar = L'b';
 		}
 
-		terminal_put(x + 1 + i % PICKER_WIDTH, y + 1 + i / PICKER_WIDTH, currchar);
+		terminal_put(x + 1 + i % CPICKER_WIDTH, y + 1 + i / CPICKER_WIDTH, currchar);
 	}
 }
