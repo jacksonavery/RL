@@ -5,8 +5,8 @@
 
 struct Tile {
 	Tile();
-	Tile(int character, color_t fgcolor, color_t bgcolor);
+	Tile(int character, int fgcolor, int bgcolor);
 
-	color_t fgcolor, bgcolor;
+	int fgcolor, bgcolor;
 	int character;
 };

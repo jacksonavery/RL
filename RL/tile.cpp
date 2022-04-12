@@ -2,9 +2,9 @@
 
 Tile::Tile() {
 	character = CHAR_EMPTY;
-	fgcolor = colors::dkgray;
-	bgcolor = colors::black;
+	fgcolor = 1;
+	bgcolor = 0;
 }
 
-Tile::Tile(int character, color_t fgcolor, color_t bgcolor) :
+Tile::Tile(int character, int fgcolor, int bgcolor) :
 	fgcolor(fgcolor), bgcolor(bgcolor), character(character) {}
