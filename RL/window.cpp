@@ -29,7 +29,7 @@ bool Window::init() {
 
 void Window::gameLoop() {
 	_input = new Input();
-	_handler = new Editor(_input, 32, 32, L"untitled");
+	_handler = new Editor(_input, 32, 32);
 
 	//rudimentary fps tracker
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
@@ -58,5 +58,8 @@ void Window::update(int elapsedTime) {
 }
 
 void Window::draw() {
+	terminal_bkcolor(colors::black);
+	terminal_clear();
 	_handler->draw();
+	terminal_refresh();
 }

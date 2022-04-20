@@ -19,6 +19,7 @@ public:
 	 * expects one of UIBOX_OUTLINE_CENTERED (def), UIBOX_OUTLINE_OUTER
 	 */
 	void set_outline(int outlinestyle);
+	void setTitle(const wchar_t* title);
 private:
 	wchar_t _tlcorner;
 	wchar_t _trcorner;

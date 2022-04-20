@@ -29,9 +29,13 @@ void UIBox::set_outline(int outlinestyle) {
 	}
 }
 
+void  UIBox::setTitle(const wchar_t* title) {
+	_title.assign(title);
+}
+
 void UIBox::draw(int x, int y) {
 	terminal_bkcolor(colors::black);
-	terminal_color(colors::white);
+	terminal_color(colors::dkgray);
 	//horizontals
 	for (int i = 1; i < _w; i++) {
 		terminal_put(x + i, y, _upper);
@@ -50,11 +54,11 @@ void UIBox::draw(int x, int y) {
 	//center fill
 	for (int i = 1; i < _w; i++) {
 		for (int j = 1; j < _h; j++) {
-			terminal_put(x + i, y + j, 0);
+			terminal_put(x + i, y + j, CHAR_EMPTY);
 		}
 	}
 	//string prints
 	terminal_print_ext(x + 1, y + 1, _w - 1, _h - 1, TK_ALIGN_LEFT, _message.c_str());
-	terminal_print_ext(x, y + _h, _w, 1, TK_ALIGN_CENTER, _title.c_str());
+	terminal_print_ext(x, y + _h, _w+1, 1, TK_ALIGN_CENTER, _title.c_str());
 
 }
