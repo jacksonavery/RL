@@ -1,5 +1,8 @@
 #pragma once
 #include <string>
+#include <sstream>
+#include <iomanip>
+
 namespace globals {
 	const int width = 1920, height = 1080, tileSize = 24;
 	//80*45 atm
@@ -13,5 +16,11 @@ namespace globals {
 
 	//const std::string font = "fonts/PixelMplus12-Regular.ttf";
 	//const std::string font = "fonts/PixelMplus10-Regular.ttf";
-	const std::string font = "fonts/SourceHanSerif-VF.ttf";
+	//const std::string font = "fonts/SourceHanSerif-VF.ttf";
+}
+
+static std::wstring intToHexString(int conv) {
+	std::wostringstream s;
+	s << "0x" << std::setiosflags(std::ios::uppercase) << std::setfill(L'0') << std::setw(4) << std::hex << conv;
+	return s.str();
 }
