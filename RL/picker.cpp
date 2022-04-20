@@ -5,7 +5,10 @@ Picker::Picker(Tile* currtile, Input* input) : _currTile(currtile), _input(input
 	_colh = (colors::numcolors + COLPICKER_WIDTH - 1) / COLPICKER_WIDTH;
 	_colbox = UIBox(_colw + 2, _colh + 2, L"", L"cols");
 
-	_charbox = UIBox(CHARPICKER_WIDTH + 2, CHARPICKER_HEIGHT + 2, L"", L"chars");
+	_charbox = UIBox(CHARPICKER_WIDTH + 2, CHARPICKER_HEIGHT + 2, L"", L"");
+	//sets default set to 0xe000
+	_charpointindex = 2;
+	advanceCharPickerOffset();
 }
 
 Picker::~Picker() {
@@ -22,13 +25,25 @@ void Picker::update(int mxl, int myl) {
 	if (_input->isKeyPressed(TK_MOUSE_RIGHT))
 		if (mxl < _colw && mxl >= 0 && myl >= 0 && mxl + myl * _colw < colors::numcolors)
 			_currTile->bgcolor = mxl + myl * _colw;
+	
 	// ==chars box==
 	// TODO: this can't be right but it works atm
 	mxl += COLPICKER_OFFS_X - CHARPICKER_OFFS_X + 4;
 	myl += COLPICKER_OFFS_Y - CHARPICKER_OFFS_Y;
 	if (_input->isKeyPressed(TK_MOUSE_LEFT))
 		if (mxl < CHARPICKER_WIDTH && mxl >= 0 && myl >= 0 && myl < CHARPICKER_HEIGHT)
-			_currTile->character = 0xE000 + mxl + myl * CHARPICKER_WIDTH;
+			_currTile->character = _charpointoffsets[_charpointindex] + mxl + myl * CHARPICKER_WIDTH;
+	//menus
+	if (_input->isKeyPressed(TK_TAB)) {
+		advanceCharPickerOffset();
+	}
+}
+
+void Picker::advanceCharPickerOffset() {
+	_charpointindex = (_charpointindex + 1) % _charpointoffsets.size();
+	std::wstring title = L"chars:";
+	title.append(intToHexString(_charpointoffsets[_charpointindex]));
+	_charbox.setTitle(title.c_str());
 }
 
 void Picker::draw(int x, int y) {
@@ -60,6 +75,6 @@ void Picker::draw(int x, int y) {
 	terminal_bkcolor(colors::indexed[_currTile->bgcolor]);
 	terminal_color(colors::indexed[_currTile->fgcolor]);
 	for (int i = 0; i < CHARPICKER_WIDTH * CHARPICKER_HEIGHT; i++) {
-		terminal_put(x + 1 + i % CHARPICKER_WIDTH, y + 1 + i / CHARPICKER_WIDTH, 0xE000+i);
+		terminal_put(x + 1 + i % CHARPICKER_WIDTH, y + 1 + i / CHARPICKER_WIDTH, _charpointoffsets[_charpointindex] + i);
 	}
 }
