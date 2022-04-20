@@ -336,3 +336,5 @@ ASALocalRun/
 #don't publish other people's libraries
 deps/**
 *.kra
+
+RL/canvases/test/
