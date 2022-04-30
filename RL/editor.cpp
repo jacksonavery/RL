@@ -6,20 +6,15 @@
 #define MASK_CHARACT 4
 
 Editor::Editor(Input* input, int w, int h, const wchar_t* title) : _input(input), _w(w), _h(h) {
-	_tiles.resize(_w*_h);
-	_cx = -globals::tWidth / 2 + _w / 2;
-	_cy = -globals::tHeight/ 2 + _h / 2;
-
-	//assign name
-	_canvasTitle.assign(title);
-	_outline = UIBox(_w + 2, _h + 2, L"", title);
-
-	//def character
+	//def draw character
 	_brushTile = Tile(CHAR_FULL, 1, 0);
 	//picker
 	_picker = new Picker(&_brushTile, _input);
 	//no windows open by def
 	_state = states::direct;
+
+	//init file
+	newFile(w, h);
 }
 
 Editor::~Editor() {
@@ -42,7 +37,6 @@ void Editor::update(int elapsedTime) {
 	}
 }
 
-//TODO: save and load should prompt file explorer
 void Editor::loadFile() {
 	std::wstring filePath = FileDialog::loadFile(L"Character Set File (*.chs)\0*.chs\0");
 	if (filePath.empty())
@@ -67,8 +61,13 @@ void Editor::loadFile() {
 
 	file.close();
 
+	//assign internal path
+	_canvasPath = filePath;
+
+	//canvas modifications
 	_canvasTitle = filePath.substr(filePath.rfind(L"\\") + 1);
 	_outline.setTitle(_canvasTitle.c_str());
+	_outline = UIBox(_w + 2, _h + 2, L"", _canvasTitle.c_str());
 }
 
 void Editor::saveFile(bool newName) {
@@ -81,8 +80,7 @@ void Editor::saveFile(bool newName) {
 			return;
 	}
 	else {
-		filePath = L"canvases\\";
-		filePath.append(_canvasTitle);
+		filePath = _canvasPath;
 	}
 
 	std::ofstream file;
@@ -92,7 +90,7 @@ void Editor::saveFile(bool newName) {
 		return;
 	}
 
-	//actual read
+	//actual write
 	file.write((char*)&_w, sizeof(_w));
 	file.write((char*)&_h, sizeof(_h));
 	_tiles.resize(_w*_h);
@@ -102,8 +100,34 @@ void Editor::saveFile(bool newName) {
 		file.write((char*)&_tiles[i].fgcolor, sizeof(int));
 	}
 
+	file.close();
+
+	//assign internal path
+	_canvasPath = filePath;
+
+	//canvas mods
 	_canvasTitle = filePath.substr(filePath.rfind(L"\\") + 1);
 	_outline.setTitle(_canvasTitle.c_str());
+}
+
+void Editor::newFile(int w, int h, bool fill) {
+	//reassign internal vals
+	_w = w;
+	_h = h;
+	//center camera
+	_cx = -globals::tWidth / 2 + _w / 2;
+	_cy = -globals::tHeight / 2 + _h / 2;
+	//update uibox
+	_canvasTitle.assign(L"untitled");
+	_outline = UIBox(_w + 2, _h + 2, L"", _canvasTitle.c_str());
+	//resize canvas itself
+	_tiles.clear();
+	if (fill)
+		_tiles.resize(_w*_h, _brushTile);
+	else
+		_tiles.resize(_w*_h);
+	//reset filepathing so we prompt 'save as' functionality
+	_canvasPath = L"";
 }
 
 void Editor::doDirectInput() {
@@ -118,7 +142,7 @@ void Editor::doDirectInput() {
 	//save
 	if (_input->isKeyPressed(TK_S) && _input->isKeyHeld(TK_CONTROL)) {
 		//prompt for rename on SHIFT or if not renamed
-		if (!_canvasTitle.compare(L"untitled.chs") || _input->isKeyHeld(TK_SHIFT)) {
+		if (!_canvasPath.compare(L"") || _input->isKeyHeld(TK_SHIFT)) {
 			saveFile(true);
 		}
 		saveFile();
@@ -126,8 +150,38 @@ void Editor::doDirectInput() {
 	}
 	//load
 	if (_input->isKeyPressed(TK_A) && _input->isKeyHeld(TK_CONTROL)) {
-		//doStrEntry();
 		loadFile();
+	}
+
+	//create new
+	if (_input->isKeyPressed(TK_N) && _input->isKeyHeld(TK_CONTROL)) {
+		std::wstring temp;
+		int tempw = 0;
+		int temph = 0;
+		//width
+		temp = doStrEntry(L"new width:");
+		if (temp.compare(L"") == 0)
+			return;
+		try { tempw = std::stoi(temp); }
+			catch (std::invalid_argument iae) { return; }
+		
+		//heightt
+		temp = doStrEntry(L"new height (or `s`quare):");
+		if (temp.compare(L"") == 0)
+			return;
+		if (temp.compare(L"s") == 0)
+			temph = tempw;
+		else try { temph = std::stoi(temp); }
+			catch (std::invalid_argument iae) { return; }
+
+		bool dofill = false;
+		temp = doStrEntry(L"fill with current brush tile? (y/*):");
+		if (temp.compare(L"y") == 0)
+			dofill = true;
+
+		_w = tempw;
+		_h = temph;
+		newFile(_w,_h, dofill);
 	}
 
 
@@ -149,7 +203,10 @@ void Editor::doDirectInput() {
 	}
 
 	// == mouse pencil. TODO: refactor to updatePencil and so on (prob updateTool(), which will get _currtool) ==
+	doPencil();
+}
 
+void Editor::doPencil() {
 	// this mask code is a little illegible but itll do.
 	// if 1,2, or 3 are pressed, it masks to the FG,BG, and CHAR, respectively,
 	// muting the unpressed other keys.  supports any combination.
@@ -190,17 +247,14 @@ void Editor::doPicker() {
 	_picker->update(_mx - _px, _my - _py);
 }
 
-//void Editor::doStrEntry() {
-//	wchar_t a[128];
-//	std::copy(_canvasTitle.begin(), _canvasTitle.end(), a);
-//	a[_canvasTitle.size()] = '\0';
-//	terminal_bkcolor(colors::black);
-//	terminal_color(colors::white);
-//	terminal_read_str(1, 1, a, sizeof(a) - 1);
-//	_canvasTitle.assign(a);
-//
-//	_outline.setTitle(a);
-//}
+std::wstring Editor::doStrEntry(std::wstring msg) {
+	wchar_t a[64] = {};
+	terminal_bkcolor(colors::black);
+	terminal_color(colors::white);
+	terminal_print(1, globals::tHeight - 2, msg.c_str());
+	int b = terminal_read_str(1 + msg.length(), globals::tHeight - 2, a, sizeof(a) - 1);
+	return std::wstring(a);
+}
 
 void Editor::draw() {
 	//draw bg
@@ -225,7 +279,7 @@ void Editor::drawDirect() {
 			drawSingleTile(i - _cx, j - _cy, &_tiles[i + j * _w]);
 		}
 	}
-	//the preview char on cursor. TODO: move?
+	//the preview char on cursor
 	_input->getMousePos(&_mx, &_my);
 	if (areValidCoords(_mx + _cx, _my + _cy, _w, _h)) {
 		terminal_layer(0);

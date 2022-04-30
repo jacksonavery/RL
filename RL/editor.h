@@ -32,17 +32,18 @@ public:
 	void update(int elapsedTime);
 	void draw();
 
-	//returns whether given coords are within canvas bounds
+	//returns whether given coords are within given bounds
 	static bool areValidCoords(int x, int y, int w, int h);
 private:
 	//load file
 	void loadFile();
 	//save file
 	void saveFile(bool newName = false);
+	//create new empty file
+	void newFile(int w, int h, bool fill = false);
 	//calls terminal_put with a tile
 	void drawSingleTile(int x, int y, Tile* tile);
-	//stores a tile into the vector.
-	//return 0 if out of bounds.
+	//stores a tile into the vector. return 0 if out of bounds.
 	bool storeSingleTile(int x, int y, Tile* tile, int mask = 0xFFFF);
 	//get a tile at a coordinate
 	Tile getTile(int x, int y);
@@ -50,7 +51,9 @@ private:
 	//an opened ui
 	void doDirectInput();
 	void doPicker();
-	//void doStrEntry();
+	std::wstring doStrEntry(std::wstring msg = L"");
+	//pencil tool
+	void doPencil();
 	//move camera with the mouse
 	void doMMBMove();
 	//draw call for diff UI states
@@ -62,6 +65,8 @@ private:
 	std::vector<Tile> _tiles;
 	//name of current canvas
 	std::wstring _canvasTitle;
+	//full file path of current canvas
+	std::wstring _canvasPath;
 	//so we can get key status remotely
 	Input* _input;
 	//size of current canvas
