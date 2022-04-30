@@ -1,6 +1,26 @@
 #pragma once
 #include <BearLibTerminal.h>
 namespace colors {
+	const color_t black = 0xff090b0d;
+	const color_t white = 0xfffffefb;
+	const color_t dkgrey = 0xff3c3346;
+	const color_t grey = 0xff515478;
+	const color_t lgrey = 0xffa6b4be;
+	const color_t red = 0xfff71b4e;
+	const color_t skin = 0xfffbe1b6;
+	const color_t parv = 0xffbefe21;
+	const color_t cyan = 0xff4efaf7;
+	const color_t blue = 0xff3845cb;
+	const color_t green = 0xff50e754;
+	const color_t yellow = 0xffffff49;
+	const color_t skinsh = 0xffe59883;
+	const color_t purple = 0xff612ea7;
+	const color_t orange = 0xfff58722;
+	const color_t fgreen = 0xff3a8053;
+
+	const int numcolors = 16;
+	const color_t indexed[numcolors] = { black, white, dkgrey, grey, lgrey, red, yellow, parv, cyan, blue, green, skin, skinsh, purple, orange, fgreen };
+
 	//const color_t black = 0xff0e1214;
 	//const color_t white = 0xfff6f7f3;
 	//const color_t rust = 0xff9c3c31;
@@ -25,40 +45,40 @@ namespace colors {
 	//								brown, maroon, skinsh, dkgray,
 	//								gray, foam, pink, lgray };
 
-	const color_t black = 0xff090b0d;
-	const color_t deepgray = 0xff292725;
-	const color_t dkgray = 0xff444848;
-	const color_t gray = 0xff868986;
-	const color_t lgray = 0xffd3d4d2;
-	const color_t white = 0xfffffefb;
-	const color_t deepblue = 0xff033e5e;
-	const color_t dkblue = 0xff0b789a;
-	const color_t blue = 0xff3bbedb;
-	const color_t lgreenc64 = 0xff7de588;
-	const color_t dkpurple = 0xff4e50a3;
-	const color_t purple = 0xffb371d4;
-	const color_t dkorange = 0xff9c3c31;
-	const color_t orange = 0xffec8a4c;
-	const color_t skin = 0xfffbe1b6;
-	const color_t skinsh = 0xffdc9474;
-	const color_t dkpink = 0xffb34862;
-	const color_t pink = 0xffff8c91;
-	const color_t dkbrown = 0xff4c2829;
-	const color_t brown = 0xff785142;
-	const color_t deepgreen = 0xff273336;
-	const color_t greenbl = 0xff296145;
-	const color_t greenyl = 0xff458239;
-	const color_t lgreen = 0xff9dad34;
-	const color_t yellow = 0xffffd832;
-	const color_t red = 0xffd52b2d;
-
-	const int numcolors = 26;
-
-	const color_t indexed[numcolors] = { black, deepgray, dkgray, gray, lgray,
-										deepblue, dkblue, blue, lgreenc64, white,
-										dkpurple, purple, dkorange, orange, skin,
-										dkpink, pink, dkbrown, brown, skinsh,
-										deepgreen, greenbl, greenyl, lgreen, yellow, red};
+	//const color_t black = 0xff090b0d;
+	//const color_t deepgray = 0xff292725;
+	//const color_t dkgray = 0xff444848;
+	//const color_t gray = 0xff868986;
+	//const color_t lgray = 0xffd3d4d2;
+	//const color_t white = 0xfffffefb;
+	//const color_t deepblue = 0xff033e5e;
+	//const color_t dkblue = 0xff0b789a;
+	//const color_t blue = 0xff3bbedb;
+	//const color_t lgreenc64 = 0xff7de588;
+	//const color_t dkpurple = 0xff4e50a3;
+	//const color_t purple = 0xffb371d4;
+	//const color_t dkorange = 0xff9c3c31;
+	//const color_t orange = 0xffec8a4c;
+	//const color_t skin = 0xfffbe1b6;
+	//const color_t skinsh = 0xffdc9474;
+	//const color_t dkpink = 0xffb34862;
+	//const color_t pink = 0xffff8c91;
+	//const color_t dkbrown = 0xff4c2829;
+	//const color_t brown = 0xff785142;
+	//const color_t deepgreen = 0xff273336;
+	//const color_t greenbl = 0xff296145;
+	//const color_t greenyl = 0xff458239;
+	//const color_t lgreen = 0xff9dad34;
+	//const color_t yellow = 0xffffd832;
+	//const color_t red = 0xffd52b2d;
+	//
+	//const int numcolors = 26;
+	//
+	//const color_t indexed[numcolors] = { black, deepgray, dkgray, gray, lgray,
+	//									deepblue, dkblue, blue, lgreenc64, white,
+	//									dkpurple, purple, dkorange, orange, skin,
+	//									dkpink, pink, dkbrown, brown, skinsh,
+	//									deepgreen, greenbl, greenyl, lgreen, yellow, red};
 }
 
 

@@ -30,7 +30,7 @@ private:
 	UIBox _colbox;
 	UIBox _charbox;
 	int _charpointindex;
-	std::vector<int> _charpointoffsets = {0, 0x30a0, 0x2600, 0xE000};
+	std::vector<int> _charpointoffsets = {0, 0x0370, 0x25A0, 0x2600, 0xE000};
 	Tile* _currTile;
 	int _colw, _colh;
 	Input* _input;

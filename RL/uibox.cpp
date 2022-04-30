@@ -35,7 +35,7 @@ void  UIBox::setTitle(const wchar_t* title) {
 
 void UIBox::draw(int x, int y) {
 	terminal_bkcolor(colors::black);
-	terminal_color(colors::dkgray);
+	terminal_color(colors::dkgrey);
 	//horizontals
 	for (int i = 1; i < _w; i++) {
 		terminal_put(x + i, y, _upper);
