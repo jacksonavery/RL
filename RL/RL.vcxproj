@@ -135,6 +135,7 @@
     <ClCompile Include="editor.cpp" />
     <ClCompile Include="fileDialog.cpp" />
     <ClCompile Include="input.cpp" />
+    <ClCompile Include="logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="picker.cpp" />
     <ClCompile Include="tile.cpp" />
@@ -151,6 +152,7 @@
     <ClInclude Include="globals.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="level.h" />
+    <ClInclude Include="logger.h" />
     <ClInclude Include="picker.h" />
     <ClInclude Include="tile.h" />
     <ClInclude Include="tileChangeCommand.h" />

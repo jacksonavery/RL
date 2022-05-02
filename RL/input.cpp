@@ -23,8 +23,6 @@ bool Input::doEventInput() {
 			//printf("as released\n", key);
 			handleKeyRelease(key ^ TK_KEY_RELEASED);
 		}
-		if (key == TK_CLOSE || key == TK_Q && isKeyHeld(TK_CONTROL))
-			return true;
 	}
 
 	return false;

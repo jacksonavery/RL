@@ -15,7 +15,8 @@ private:
 	bool init();
 
 	void gameLoop();
-	void update(int elapsedTime);
+	//returns 1 if closed
+	int update(int elapsedTime);
 	void draw();
 
 	std::string _title = "window";
