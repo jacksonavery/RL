@@ -143,6 +143,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="colors.h" />
+    <ClInclude Include="command.h" />
+    <ClInclude Include="commandHandler.h" />
     <ClInclude Include="editor.h" />
     <ClInclude Include="fileDialog.h" />
     <ClInclude Include="geometric character points.h" />
@@ -151,6 +153,7 @@
     <ClInclude Include="level.h" />
     <ClInclude Include="picker.h" />
     <ClInclude Include="tile.h" />
+    <ClInclude Include="tileChangeCommand.h" />
     <ClInclude Include="uibox.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>

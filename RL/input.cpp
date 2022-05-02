@@ -21,7 +21,7 @@ bool Input::doEventInput() {
 		}
 		else {
 			//printf("as released\n", key);
-			handleKeyRelease(key - TK_KEY_RELEASED);
+			handleKeyRelease(key ^ TK_KEY_RELEASED);
 		}
 		if (key == TK_CLOSE || key == TK_Q && isKeyHeld(TK_CONTROL))
 			return true;
@@ -32,6 +32,7 @@ bool Input::doEventInput() {
 
 void Input::resetInput() {
 	_pressedKeys.clear();
+	_releasedKeys.clear();
 }
 
 void Input::handleKeyPress(int key) {

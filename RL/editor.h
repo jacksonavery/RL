@@ -9,6 +9,8 @@
 #include "uibox.h"
 #include "picker.h"
 #include "fileDialog.h"
+#include "tileChangeCommand.h"
+#include "commandHandler.h"
 
 /*
  * ==Editor Class==
@@ -54,6 +56,7 @@ private:
 	std::wstring doStrEntry(std::wstring msg = L"");
 	//pencil tool
 	void doPencil();
+	bool _doingPencil;
 	//move camera with the mouse
 	void doMMBMove();
 	//draw call for diff UI states
@@ -79,6 +82,8 @@ private:
 	Tile _brushTile;
 	//color/char picker window
 	Picker* _picker;
+	//command handler
+	CommandHandler* _commandHandler;
 	//camera coords
 	int _cx, _cy;
 	//mouse coords

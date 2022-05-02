@@ -9,4 +9,14 @@ struct Tile {
 
 	int fgcolor, bgcolor;
 	int character;
+
+	bool operator==(const Tile& other) {
+		if (fgcolor != other.fgcolor)
+			return false;
+		if (bgcolor != other.bgcolor)
+			return false;
+		if (character != other.character)
+			return false;
+		return true;
+	}
 };

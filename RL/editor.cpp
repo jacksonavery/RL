@@ -1,4 +1,4 @@
-#include "editor.h"
+﻿#include "editor.h"
 
 //masks for what to paint
 #define MASK_FGCOLOR 1
@@ -7,9 +7,13 @@
 
 Editor::Editor(Input* input, int w, int h, const wchar_t* title) : _input(input), _w(w), _h(h) {
 	//def draw character
-	_brushTile = Tile(CHAR_FULL, 1, 0);
+	_brushTile = Tile(L'ı', 1, 0);
+	//disable pencil
+	_doingPencil = false;
 	//picker
 	_picker = new Picker(&_brushTile, _input);
+	//null cmdhndler
+	_commandHandler = nullptr;
 	//no windows open by def
 	_state = states::direct;
 
@@ -19,6 +23,7 @@ Editor::Editor(Input* input, int w, int h, const wchar_t* title) : _input(input)
 
 Editor::~Editor() {
 	delete(_picker);
+	delete(_commandHandler);
 }
 
 void Editor::update(int elapsedTime) {
@@ -128,6 +133,10 @@ void Editor::newFile(int w, int h, bool fill) {
 		_tiles.resize(_w*_h);
 	//reset filepathing so we prompt 'save as' functionality
 	_canvasPath = L"";
+	//reset commandHandler. this is inelegant
+	if (_commandHandler)
+		delete(_commandHandler);
+	_commandHandler = new CommandHandler();
 }
 
 void Editor::doDirectInput() {
@@ -185,6 +194,17 @@ void Editor::doDirectInput() {
 	}
 
 
+	//undo and redo
+	if (_input->isKeyPressed(TK_Z) && _input->isKeyHeld(TK_CONTROL)) {
+		if (_input->isKeyHeld(TK_SHIFT)) {
+			_commandHandler->redoCommand();
+		}
+		else {
+			_commandHandler->undoCommand();
+		}
+	}
+
+
 	//movement.
 	if (_input->isKeyHeld(TK_MOUSE_MIDDLE)) {
 		doMMBMove();
@@ -207,6 +227,14 @@ void Editor::doDirectInput() {
 }
 
 void Editor::doPencil() {
+	//handle starting and stopping input
+	if (_input->isKeyPressed(TK_MOUSE_LEFT)) {
+		_doingPencil = true;
+	}
+	if (_input->isKeyReleased(TK_MOUSE_LEFT)) {
+		_doingPencil = false;
+	}
+
 	// this mask code is a little illegible but itll do.
 	// if 1,2, or 3 are pressed, it masks to the FG,BG, and CHAR, respectively,
 	// muting the unpressed other keys.  supports any combination.
@@ -227,11 +255,13 @@ void Editor::doPencil() {
 	if (!useMask)
 		mask = 0xFFFF;
 
+	//modifications
 	_input->getMousePos(&_mx, &_my);
 
-	if (_input->isKeyHeld(TK_MOUSE_LEFT)) {
+	if (_doingPencil) {
 		storeSingleTile(_mx + _cx, _my + _cy, &_brushTile, mask);
 	}
+
 	if (_input->isKeyHeld(TK_MOUSE_RIGHT)) {
 		_brushTile = getTile(_mx + _cx, _my + _cy);
 	}
@@ -320,14 +350,26 @@ bool Editor::areValidCoords(int x, int y, int w, int h) {
 bool Editor::storeSingleTile(int x, int y, Tile* tile, int mask) {
 	if (!areValidCoords(x, y, _w, _h))
 		return false;
-	//masking for certain values
-	Tile* currtile = &_tiles[x + y * _w];
+	// masking for certain values
+	Tile* oldtile = &_tiles[x + y * _w];
+	Tile currtile = _tiles[x + y * _w];
 	if (mask & MASK_FGCOLOR)
-		currtile->fgcolor = tile->fgcolor;
+		currtile.fgcolor = tile->fgcolor;
 	if (mask & MASK_BGCOLOR)
-		currtile->bgcolor = tile->bgcolor;
+		currtile.bgcolor = tile->bgcolor;
 	if (mask & MASK_CHARACT)
-		currtile->character = tile->character;
+		currtile.character = tile->character;
+
+	// dont make updates that don't change anything
+	if (*oldtile == currtile)
+		return false;
+
+	// command must be updated first or currtile will be wrong
+	//printf("old: %d, new: %d\n", oldtile->character, currtile.character);
+	_commandHandler->addCommand(new TileChangeCommand(x, y, oldtile, &currtile));
+
+	*oldtile = currtile;
+
 	return true;
 }
 
