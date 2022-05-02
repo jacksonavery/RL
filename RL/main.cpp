@@ -3,6 +3,6 @@
 #include <iostream>
 
 int main(int argc, char* argv[]) {
-	Window window("3", globals::width, globals::height);
+	Window window("", globals::width, globals::height);
 	return 0;
 }

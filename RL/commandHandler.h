@@ -5,7 +5,7 @@
 class CommandHandler {
 public:
 	CommandHandler() {
-		_historyIndex = -1;
+		_lastSavedIndex = _historyIndex = -1;
 	}
 
 	~CommandHandler() {
@@ -41,7 +41,16 @@ public:
 		_historyIndex++;
 	}
 
+	bool areChanges() {
+		return !(_historyIndex == _lastSavedIndex);
+	}
+
+	void callOnSave() {
+		_lastSavedIndex = _historyIndex;
+	}
+
 private:
 	std::vector<Command*> _history;
 	int _historyIndex;
+	int _lastSavedIndex;
 };

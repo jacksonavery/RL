@@ -11,6 +11,7 @@
 #include "fileDialog.h"
 #include "tileChangeCommand.h"
 #include "commandHandler.h"
+#include "logger.h"
 
 /*
  * ==Editor Class==
@@ -31,7 +32,7 @@ class Editor {
 public:
 	Editor(Input* input, int w, int h, const wchar_t* title = L"untitled.chs");
 	~Editor();
-	void update(int elapsedTime);
+	int update(int elapsedTime);
 	void draw();
 
 	//returns whether given coords are within given bounds
@@ -40,9 +41,11 @@ private:
 	//load file
 	void loadFile();
 	//save file
-	void saveFile(bool newName = false);
+	void saveFile();
 	//create new empty file
 	void newFile(int w, int h, bool fill = false);
+	//prompt before closing
+	void promptSave();
 	//calls terminal_put with a tile
 	void drawSingleTile(int x, int y, Tile* tile);
 	//stores a tile into the vector. return 0 if out of bounds.
@@ -84,6 +87,8 @@ private:
 	Picker* _picker;
 	//command handler
 	CommandHandler* _commandHandler;
+	//logger
+	Logger* _logger;
 	//camera coords
 	int _cx, _cy;
 	//mouse coords
@@ -93,4 +98,6 @@ private:
 	int _fcx, _fcy;
 	//picker coords
 	int _px, _py;
+	//closed bool
+	bool _closed = false;
 };

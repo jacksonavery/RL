@@ -14,8 +14,12 @@ Editor::Editor(Input* input, int w, int h, const wchar_t* title) : _input(input)
 	_picker = new Picker(&_brushTile, _input);
 	//null cmdhndler
 	_commandHandler = nullptr;
+	//new logger
+	_logger = new Logger;
 	//no windows open by def
 	_state = states::direct;
+	//not closed
+	_closed = false;
 
 	//init file
 	newFile(w, h);
@@ -24,10 +28,11 @@ Editor::Editor(Input* input, int w, int h, const wchar_t* title) : _input(input)
 Editor::~Editor() {
 	delete(_picker);
 	delete(_commandHandler);
+	delete(_logger);
 }
 
-void Editor::update(int elapsedTime) {
-	//only allows current 'state' to get input
+int Editor::update(int elapsedTime) {
+	//only allows current 'state' to get input.
 	switch (_state) {
 	case states::direct:
 		doDirectInput();
@@ -40,6 +45,15 @@ void Editor::update(int elapsedTime) {
 		_state = states::direct;
 		break;
 	}
+	//logger is transcendential
+	_logger->update();
+	//ckeck for closing regardless of state
+	if (_input->isKeyPressed(TK_CLOSE) || _input->isKeyPressed(TK_Q) && _input->isKeyHeld(TK_CONTROL)) {
+		promptSave();
+		_closed = true;
+	}
+
+	return _closed;
 }
 
 void Editor::loadFile() {
@@ -57,7 +71,10 @@ void Editor::loadFile() {
 	//actual read
 	file.read((char*)&_w, sizeof(_w));
 	file.read((char*)&_h, sizeof(_h));
-	_tiles.resize(_w*_h);
+	
+	//just call newfile
+	newFile(_w, _h);
+
 	for (int i = 0; i < _w*_h; i++) {
 		file.read((char*)&_tiles[i].character, sizeof(int));
 		file.read((char*)&_tiles[i].bgcolor, sizeof(int));
@@ -73,13 +90,19 @@ void Editor::loadFile() {
 	_canvasTitle = filePath.substr(filePath.rfind(L"\\") + 1);
 	_outline.setTitle(_canvasTitle.c_str());
 	_outline = UIBox(_w + 2, _h + 2, L"", _canvasTitle.c_str());
+
+	//log
+	std::wstring logmsg = L"Opened file `";
+	logmsg.append(_canvasTitle);
+	logmsg.append(L"`");
+	_logger->logMessage(logmsg);
 }
 
-void Editor::saveFile(bool newName) {
+void Editor::saveFile() {
 	//if need a new name, prompt for it.
 	//otherwise save with existing name
 	std::wstring filePath;
-	if (newName) {
+	if (!_canvasPath.compare(L"") || _input->isKeyHeld(TK_SHIFT)) {
 		filePath = FileDialog::saveFile(L"Character Set File (*.chs)\0*.chs\0");
 		if (filePath.empty())
 			return;
@@ -113,6 +136,15 @@ void Editor::saveFile(bool newName) {
 	//canvas mods
 	_canvasTitle = filePath.substr(filePath.rfind(L"\\") + 1);
 	_outline.setTitle(_canvasTitle.c_str());
+
+	//update commandHandler
+	_commandHandler->callOnSave();
+
+	//log
+	std::wstring logmsg = L"Saved file `";
+	logmsg.append(_canvasTitle);
+	logmsg.append(L"`");
+	_logger->logMessage(logmsg);
 }
 
 void Editor::newFile(int w, int h, bool fill) {
@@ -150,15 +182,12 @@ void Editor::doDirectInput() {
 
 	//save
 	if (_input->isKeyPressed(TK_S) && _input->isKeyHeld(TK_CONTROL)) {
-		//prompt for rename on SHIFT or if not renamed
-		if (!_canvasPath.compare(L"") || _input->isKeyHeld(TK_SHIFT)) {
-			saveFile(true);
-		}
 		saveFile();
 
 	}
 	//load
 	if (_input->isKeyPressed(TK_A) && _input->isKeyHeld(TK_CONTROL)) {
+		promptSave();
 		loadFile();
 	}
 
@@ -174,7 +203,7 @@ void Editor::doDirectInput() {
 		try { tempw = std::stoi(temp); }
 			catch (std::invalid_argument iae) { return; }
 		
-		//heightt
+		//height
 		temp = doStrEntry(L"new height (or `s`quare):");
 		if (temp.compare(L"") == 0)
 			return;
@@ -226,6 +255,14 @@ void Editor::doDirectInput() {
 	doPencil();
 }
 
+void Editor::promptSave() {
+	if (_commandHandler->areChanges()) {
+		auto msg = doStrEntry(L"save changes? (*/q):");
+		if (msg.compare(L"q") != 0)
+			saveFile();
+	}
+}
+
 void Editor::doPencil() {
 	//handle starting and stopping input
 	if (_input->isKeyPressed(TK_MOUSE_LEFT)) {
@@ -271,6 +308,8 @@ void Editor::doPicker() {
 	//leave picker mode
 	if (_input->isKeyPressed(TK_SPACE)) {
 		_state = states::direct;
+		// prevent pencil form getting locked on
+		_doingPencil = false;
 		return;
 	}
 	//give relative mouse coords to the picker
@@ -297,6 +336,8 @@ void Editor::draw() {
 	}
 	//draw cursor
 	//drawCursor();
+	// draw logger
+	_logger->draw();
 }
 
 void Editor::drawDirect() {
