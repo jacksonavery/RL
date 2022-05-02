@@ -15,7 +15,7 @@ namespace colors {
 	const color_t yellow = 0xffffff49;
 	const color_t skinsh = 0xffe59883;
 	const color_t purple = 0xff612ea7;
-	const color_t orange = 0xfff58722;
+	const color_t orange = 0xffff9a3c;
 	const color_t fgreen = 0xff3a8053;
 
 	const int numcolors = 16;
