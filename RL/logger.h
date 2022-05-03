@@ -11,7 +11,7 @@ public:
 	Logger();
 	~Logger();
 
-	void logMessage(std::wstring message, int timeout = 120);
+	void logMessage(std::wstring message, int timeout = 180);
 	void update();
 	void draw();
 private:

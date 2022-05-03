@@ -11,6 +11,11 @@ Logger::~Logger() {
 void Logger::logMessage(std::wstring message, int timeout) {
 	_messages.push_back(message);
 	_timer += timeout;
+
+	// call draw immediately so logs happen instantaneously instead of
+	// waiting till next draw cycle.
+	draw();
+	_timer++;
 }
 
 void Logger::update() {

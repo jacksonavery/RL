@@ -318,7 +318,7 @@ std::wstring Editor::doStrEntry(std::wstring msg) {
 	wchar_t a[64] = {};
 	terminal_bkcolor(colors::black);
 	terminal_color(colors::white);
-	terminal_clear_area(1, globals::tHeight - 2, globals::tHeight - 2, 1);
+	terminal_clear_area(1, globals::tHeight - 2, globals::tWidth - 2, 1);
 	terminal_print(1, globals::tHeight - 2, msg.c_str());
 	int b = terminal_read_str(1 + msg.length(), globals::tHeight - 2, a, sizeof(a) - 1);
 	return std::wstring(a);
