@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="coordHelper.cpp" />
     <ClCompile Include="editor.cpp" />
     <ClCompile Include="fileDialog.cpp" />
     <ClCompile Include="input.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="colors.h" />
     <ClInclude Include="command.h" />
     <ClInclude Include="commandHandler.h" />
+    <ClInclude Include="coordHelper.h" />
     <ClInclude Include="editor.h" />
     <ClInclude Include="fileDialog.h" />
     <ClInclude Include="geometric character points.h" />
