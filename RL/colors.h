@@ -17,9 +17,11 @@ namespace colors {
 	const color_t purple = 0xff612ea7;
 	const color_t orange = 0xffff9a3c;
 	const color_t fgreen = 0xff3a8053;
+	const color_t brown = 0xff885c4a;
+	const color_t lblack = 0xff24242c;
 
-	const int numcolors = 16;
-	const color_t indexed[numcolors] = { black, white, dkgrey, grey, lgrey, red, yellow, parv, cyan, blue, green, skin, skinsh, purple, orange, fgreen };
+	const int numcolors = 18;
+	const color_t indexed[numcolors] = { black, white, dkgrey, grey, lgrey, red, yellow, parv, cyan, blue, green, skin, skinsh, purple, orange, fgreen, brown, lblack };
 
 	//const color_t black = 0xff0e1214;
 	//const color_t white = 0xfff6f7f3;
