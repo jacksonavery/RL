@@ -9,7 +9,7 @@ Editor::Editor(Input* input, int w, int h, const wchar_t* title) : _input(input)
 	//def draw character
 	_brushTile = Tile(L'ı', 1, 0);
 	//disable pencil
-	_doingPencil = false;
+	_doingPencil = _doingBox = false;
 	//picker
 	_picker = new Picker(&_brushTile, _input);
 	//null cmdhndler
@@ -194,29 +194,7 @@ void Editor::doDirectInput() {
 	//create new
 	if (_input->isKeyPressed(TK_N) && _input->isKeyHeld(TK_CONTROL)) {
 		promptSave();
-
-		std::wstring temp;
-		int tempw = 0;
-		int temph = 0;
-		//width
-		temp = doStrEntry(L"new width:");
-		if (temp.compare(L"") == 0)
-			return;
-		try { tempw = std::stoi(temp); }
-			catch (std::invalid_argument iae) { return; }
-		
-		//height
-		temp = doStrEntry(L"new height (or `s`quare):");
-		if (temp.compare(L"") == 0)
-			return;
-		if (temp.compare(L"s") == 0)
-			temph = tempw;
-		else try { temph = std::stoi(temp); }
-			catch (std::invalid_argument iae) { return; }
-
-		_w = tempw;
-		_h = temph;
-		newFile(_w,_h);
+		newFilePrompts();
 	}
 
 
@@ -249,7 +227,32 @@ void Editor::doDirectInput() {
 	}
 
 	// == mouse pencil. TODO: refactor to updatePencil and so on (prob updateTool(), which will get _currtool) ==
-	doPencil();
+	doTools();
+}
+
+void Editor::newFilePrompts() {
+	std::wstring temp;
+	int tempw = 0;
+	int temph = 0;
+	//width
+	temp = doStrEntry(L"new width:");
+	if (temp.compare(L"") == 0)
+		return;
+	try { tempw = std::stoi(temp); }
+	catch (std::invalid_argument iae) { return; }
+
+	//height
+	temp = doStrEntry(L"new height (or `s`quare):");
+	if (temp.compare(L"") == 0)
+		return;
+	if (temp.compare(L"s") == 0)
+		temph = tempw;
+	else try { temph = std::stoi(temp); }
+	catch (std::invalid_argument iae) { return; }
+
+	_w = tempw;
+	_h = temph;
+	newFile(_w, _h);
 }
 
 void Editor::promptSave() {
@@ -261,12 +264,45 @@ void Editor::promptSave() {
 	return;
 }
 
-void Editor::doPencil() {
-	//handle starting and stopping input
+void Editor::startBox() {
+	_doingBox = true;
+	_boxx = _mx + _cx;
+	_boxy = _my + _cy;
+}
+
+// TODO: does this explode?
+#undef min
+
+void Editor::stopBox() {
+	if (_doingBox) {
+		int tlx = std::min(_mx + _cx, _boxx);
+		int tly = std::min(_my + _cy, _boxy);
+		int w = std::abs(_mx + _cx - _boxx);
+		int h = std::abs(_my + _cy - _boxy);
+
+		for (int j = 0; j < h; j++) {
+			for (int i = 0; i < w; i++) {
+				storeSingleTile(tlx + i, tly + j, &_brushTile);
+			}
+		}
+	}
+	_doingBox = false;
+}
+	
+
+void Editor::doTools() {
+	_input->getMousePos(&_mx, &_my);
+
+	//handle starting and stopping input, as well as vars for box tool
 	if (_input->isKeyPressed(TK_MOUSE_LEFT)) {
-		_doingPencil = true;
+		if (_input->isKeyHeld(TK_CONTROL)) {
+			startBox();
+		}
+		else
+			_doingPencil = true;
 	}
 	if (_input->isKeyReleased(TK_MOUSE_LEFT)) {
+		stopBox();
 		_doingPencil = false;
 	}
 
@@ -291,12 +327,11 @@ void Editor::doPencil() {
 		mask = 0xFFFF;
 
 	//modifications
-	_input->getMousePos(&_mx, &_my);
-
 	if (_doingPencil) {
 		storeSingleTile(_mx + _cx, _my + _cy, &_brushTile, mask);
 	}
 
+	// picker
 	if (_input->isKeyHeld(TK_MOUSE_RIGHT)) {
 		_brushTile = getTile(_mx + _cx, _my + _cy);
 	}
@@ -308,8 +343,17 @@ void Editor::doPicker() {
 		_state = states::direct;
 		// prevent pencil form getting locked on
 		_doingPencil = false;
+		_doingBox = false;
 		return;
 	}
+
+	// copy-pasted inversion code
+	if (_input->isKeyPressed(TK_F)) {
+		auto a = _brushTile.bgcolor;
+		_brushTile.bgcolor = _brushTile.fgcolor;
+		_brushTile.fgcolor = a;
+	}
+
 	//give relative mouse coords to the picker
 	_picker->update(_mx - _px, _my - _py);
 }
@@ -351,7 +395,7 @@ void Editor::drawDirect() {
 	}
 	//the preview char on cursor
 	_input->getMousePos(&_mx, &_my);
-	if (areValidCoords(_mx + _cx, _my + _cy, _w, _h)) {
+	if (coordHelper::areValidCoords(_mx + _cx, _my + _cy, _w, _h)) {
 		terminal_layer(0);
 		terminal_color(colors::indexed[_brushTile.fgcolor]);
 		terminal_bkcolor(colors::indexed[_brushTile.bgcolor]);
@@ -379,16 +423,8 @@ void Editor::drawSingleTile(int x, int y, Tile* tile) {
 	terminal_put(x, y, tile->character);
 }
 
-bool Editor::areValidCoords(int x, int y, int w, int h) {
-	if (x < 0 || y < 0 || x > w - 1 || y > h - 1) {
-		//printf("invalid loc\n");
-		return false;
-	}
-	return true;
-}
-
 bool Editor::storeSingleTile(int x, int y, Tile* tile, int mask) {
-	if (!areValidCoords(x, y, _w, _h))
+	if (!coordHelper::areValidCoords(x, y, _w, _h))
 		return false;
 	// masking for certain values
 	Tile* oldtile = &_tiles[x + y * _w];
@@ -414,7 +450,7 @@ bool Editor::storeSingleTile(int x, int y, Tile* tile, int mask) {
 }
 
 Tile Editor::getTile(int x, int y) {
-	if (!areValidCoords(x, y, _w, _h))
+	if (!coordHelper::areValidCoords(x, y, _w, _h))
 		return Tile();
 	return _tiles[x + y * _w];
 }

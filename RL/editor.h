@@ -3,6 +3,7 @@
 #include <BearLibTerminal.h>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include "globals.h"
 #include "tile.h"
 #include "input.h"
@@ -12,6 +13,7 @@
 #include "tileChangeCommand.h"
 #include "commandHandler.h"
 #include "logger.h"
+#include "coordHelper.h"
 
 /*
  * ==Editor Class==
@@ -35,8 +37,6 @@ public:
 	int update(int elapsedTime);
 	void draw();
 
-	//returns whether given coords are within given bounds
-	static bool areValidCoords(int x, int y, int w, int h);
 private:
 	//load file
 	void loadFile();
@@ -44,6 +44,8 @@ private:
 	void saveFile();
 	//create new empty file
 	void newFile(int w, int h, bool fill = false);
+	//new wrapper
+	void newFilePrompts();
 	//prompt before closing
 	void promptSave();
 	//calls terminal_put with a tile
@@ -58,8 +60,10 @@ private:
 	void doPicker();
 	std::wstring doStrEntry(std::wstring msg = L"");
 	//pencil tool
-	void doPencil();
-	bool _doingPencil;
+	void doTools();
+	//box functions
+	void startBox();
+	void stopBox();
 	//move camera with the mouse
 	void doMMBMove();
 	//draw call for diff UI states
@@ -100,4 +104,9 @@ private:
 	int _px, _py;
 	//closed bool
 	bool _closed = false;
+	//trackers for if a tool is in active use
+	bool _doingPencil;
+	bool _doingBox;
+	//box fill start coords
+	int _boxx, _boxy;
 };
