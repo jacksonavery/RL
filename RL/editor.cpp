@@ -114,7 +114,7 @@ void Editor::saveFile() {
 	std::ofstream file;
 	file.open(filePath);
 	if (!file.is_open()) {
-		wprintf(L"could not save file %ls\n", filePath);
+		//wprintf(L"could not save file %ls\n", filePath);
 		return;
 	}
 
@@ -221,12 +221,12 @@ void Editor::doDirectInput() {
 		_brushTile.fgcolor = a;
 	}
 
-	//TODO: rotate currtile
+	//TODO: 'rotate' currtile
 	if (_input->isKeyPressed(TK_R)) {
 		
 	}
 
-	// == mouse pencil. TODO: refactor to updatePencil and so on (prob updateTool(), which will get _currtool) ==
+	// tools
 	doTools();
 }
 
@@ -277,8 +277,8 @@ void Editor::stopBox() {
 	if (_doingBox) {
 		int tlx = std::min(_mx + _cx, _boxx);
 		int tly = std::min(_my + _cy, _boxy);
-		int w = std::abs(_mx + _cx - _boxx);
-		int h = std::abs(_my + _cy - _boxy);
+		int w = std::abs(_mx + _cx - _boxx) + 1;
+		int h = std::abs(_my + _cy - _boxy) + 1;
 
 		for (int j = 0; j < h; j++) {
 			for (int i = 0; i < w; i++) {
@@ -300,10 +300,12 @@ void Editor::doTools() {
 		}
 		else
 			_doingPencil = true;
+		_commandHandler->startGroup();
 	}
 	if (_input->isKeyReleased(TK_MOUSE_LEFT)) {
 		stopBox();
 		_doingPencil = false;
+		_commandHandler->stopGroup();
 	}
 
 	// this mask code is a little illegible but itll do.
@@ -344,6 +346,7 @@ void Editor::doPicker() {
 		// prevent pencil form getting locked on
 		_doingPencil = false;
 		_doingBox = false;
+		_commandHandler->stopGroup();
 		return;
 	}
 
