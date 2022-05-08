@@ -17,5 +17,5 @@ public:
 private:
 	std::vector<std::wstring> _messages;
 	int _timer;
-	const int maxmsgs = 5;
+	int maxmsgs = 1;
 };
