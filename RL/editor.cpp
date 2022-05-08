@@ -7,7 +7,7 @@
 
 Editor::Editor(Input* input, int w, int h, const wchar_t* title) : _input(input), _w(w), _h(h) {
 	//def draw character
-	_brushTile = Tile(L'ı', 1, 0);
+	_brushTile = Tile(CHAR_EMPTY, 1, 0);
 	//disable pencil
 	_doingPencil = _doingBox = false;
 	//picker

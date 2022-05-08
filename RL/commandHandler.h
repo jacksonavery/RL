@@ -72,7 +72,8 @@ public:
 
 	void stopGroup() {
 		_groupOpen = false;
-		_history[_history.size() - 1]->groupWithNext = false;
+		if (_history.size() > 0)
+			_history[_history.size() - 1]->groupWithNext = false;
 	}
 
 private:
