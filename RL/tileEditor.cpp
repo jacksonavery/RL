@@ -5,7 +5,12 @@
 #define MASK_BGCOLOR 2
 #define MASK_CHARACT 4
 
-TileEditor::TileEditor(Input* input, Logger* logger, int w, int h, const wchar_t* title) : _input(input), _w(w), _h(h) {
+TileEditor::TileEditor(Input* input, Logger* logger, int w, int h, const wchar_t* title) : _w(w), _h(h) {
+	//input
+	_input = input;
+	//logger
+	_logger = logger;
+
 	//def draw character
 	_brushTile = Tile(CHAR_EMPTY, 1, 0);
 	//disable pencil
@@ -14,8 +19,6 @@ TileEditor::TileEditor(Input* input, Logger* logger, int w, int h, const wchar_t
 	_picker = new Picker(&_brushTile, _input);
 	//null cmdhndler
 	_commandHandler = nullptr;
-	//loger
-	_logger = logger;
 	//no windows open by def
 	_state = states::direct;
 	//not closed
@@ -46,11 +49,11 @@ int TileEditor::update(int elapsedTime) {
 	}
 	//ckeck for closing regardless of state
 	if (_input->isKeyPressed(TK_CLOSE) || _input->isKeyPressed(TK_Q) && _input->isKeyHeld(TK_CONTROL)) {
-		if(promptSave())
-			_closed = true;
+		if (promptSave())
+			return handlerReturns::close;
 	}
 
-	return _closed;
+	return handlerReturns::nothing;
 }
 
 void TileEditor::loadFile() {
