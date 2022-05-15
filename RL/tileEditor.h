@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include "handler.h"
 #include "globals.h"
 #include "tile.h"
 #include "input.h"
@@ -12,7 +13,6 @@
 #include "fileDialog.h"
 #include "tileChangeCommand.h"
 #include "commandHandler.h"
-#include "logger.h"
 #include "coordHelper.h"
 
 /*
@@ -30,12 +30,12 @@ enum states {
 	picker
 };
 
-class Editor {
+class TileEditor : public Handler {
 public:
-	Editor(Input* input, int w, int h, const wchar_t* title = L"untitled.chs");
-	~Editor();
-	int update(int elapsedTime);
-	void draw();
+	TileEditor(Input* input, Logger* logger, int w, int h, const wchar_t* title = L"untitled.chs");
+	~TileEditor();
+	virtual int update(int elapsedTime) override;
+	virtual void draw() override;
 
 private:
 	//load file
@@ -44,10 +44,11 @@ private:
 	void saveFile();
 	//create new empty file
 	void newFile(int w, int h, bool fill = false);
-	//new wrapper
+	//`new` wrapper
 	void newFilePrompts();
-	//prompt before closing
-	void promptSave();
+	//prompt before losing changes. returns whether to go ahead
+	//or not
+	bool promptSave();
 	//calls terminal_put with a tile
 	void drawSingleTile(int x, int y, Tile* tile);
 	//stores a tile into the vector. return 0 if out of bounds.
@@ -91,8 +92,6 @@ private:
 	Picker* _picker;
 	//command handler
 	CommandHandler* _commandHandler;
-	//logger
-	Logger* _logger;
 	//camera coords
 	int _cx, _cy;
 	//mouse coords

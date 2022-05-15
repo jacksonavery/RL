@@ -1,11 +1,11 @@
-﻿#include "editor.h"
+﻿#include "tileEditor.h"
 
 //masks for what to paint
 #define MASK_FGCOLOR 1
 #define MASK_BGCOLOR 2
 #define MASK_CHARACT 4
 
-Editor::Editor(Input* input, int w, int h, const wchar_t* title) : _input(input), _w(w), _h(h) {
+TileEditor::TileEditor(Input* input, Logger* logger, int w, int h, const wchar_t* title) : _input(input), _w(w), _h(h) {
 	//def draw character
 	_brushTile = Tile(CHAR_EMPTY, 1, 0);
 	//disable pencil
@@ -14,8 +14,8 @@ Editor::Editor(Input* input, int w, int h, const wchar_t* title) : _input(input)
 	_picker = new Picker(&_brushTile, _input);
 	//null cmdhndler
 	_commandHandler = nullptr;
-	//new logger
-	_logger = new Logger;
+	//loger
+	_logger = logger;
 	//no windows open by def
 	_state = states::direct;
 	//not closed
@@ -25,13 +25,12 @@ Editor::Editor(Input* input, int w, int h, const wchar_t* title) : _input(input)
 	newFile(w, h);
 }
 
-Editor::~Editor() {
+TileEditor::~TileEditor() {
 	delete(_picker);
 	delete(_commandHandler);
-	delete(_logger);
 }
 
-int Editor::update(int elapsedTime) {
+int TileEditor::update(int elapsedTime) {
 	//only allows current 'state' to get input.
 	switch (_state) {
 	case states::direct:
@@ -45,18 +44,16 @@ int Editor::update(int elapsedTime) {
 		_state = states::direct;
 		break;
 	}
-	//logger is transcendential
-	_logger->update();
 	//ckeck for closing regardless of state
 	if (_input->isKeyPressed(TK_CLOSE) || _input->isKeyPressed(TK_Q) && _input->isKeyHeld(TK_CONTROL)) {
-		promptSave();
-		_closed = true;
+		if(promptSave())
+			_closed = true;
 	}
 
 	return _closed;
 }
 
-void Editor::loadFile() {
+void TileEditor::loadFile() {
 	std::wstring filePath = FileDialog::loadFile(L"Character Set File (*.chs)\0*.chs\0");
 	if (filePath.empty())
 		return;
@@ -98,7 +95,7 @@ void Editor::loadFile() {
 	_logger->logMessage(logmsg);
 }
 
-void Editor::saveFile() {
+void TileEditor::saveFile() {
 	//if need a new name, prompt for it.
 	//otherwise save with existing name
 	std::wstring filePath;
@@ -121,7 +118,7 @@ void Editor::saveFile() {
 	//actual write
 	file.write((char*)&_w, sizeof(_w));
 	file.write((char*)&_h, sizeof(_h));
-	_tiles.resize(_w*_h);
+	//_tiles.resize(_w*_h);
 	for (int i = 0; i < _w*_h; i++) {
 		file.write((char*)&_tiles[i].character, sizeof(int));
 		file.write((char*)&_tiles[i].bgcolor, sizeof(int));
@@ -147,7 +144,7 @@ void Editor::saveFile() {
 	_logger->logMessage(logmsg);
 }
 
-void Editor::newFile(int w, int h, bool fill) {
+void TileEditor::newFile(int w, int h, bool fill) {
 	//reassign internal vals
 	_w = w;
 	_h = h;
@@ -171,7 +168,7 @@ void Editor::newFile(int w, int h, bool fill) {
 	_commandHandler = new CommandHandler();
 }
 
-void Editor::doDirectInput() {
+void TileEditor::doDirectInput() {
 	//enter picker mode
 	if (_input->isKeyPressed(TK_SPACE)) {
 		_state = states::picker;
@@ -187,14 +184,14 @@ void Editor::doDirectInput() {
 	}
 	//load
 	if (_input->isKeyPressed(TK_A) && _input->isKeyHeld(TK_CONTROL)) {
-		promptSave();
-		loadFile();
+		if(promptSave())
+			loadFile();
 	}
 
 	//create new
 	if (_input->isKeyPressed(TK_N) && _input->isKeyHeld(TK_CONTROL)) {
-		promptSave();
-		newFilePrompts();
+		if(promptSave())
+			newFilePrompts();
 	}
 
 
@@ -230,7 +227,7 @@ void Editor::doDirectInput() {
 	doTools();
 }
 
-void Editor::newFilePrompts() {
+void TileEditor::newFilePrompts() {
 	std::wstring temp;
 	int tempw = 0;
 	int temph = 0;
@@ -255,16 +252,16 @@ void Editor::newFilePrompts() {
 	newFile(_w, _h);
 }
 
-void Editor::promptSave() {
-	if (_commandHandler->areChanges()) {
-		std::wstring msg = doStrEntry(L"save changes? (*/q):");
-		if (msg.compare(L"q") != 0)
-			saveFile();
-	}
-	return;
+bool TileEditor::promptSave() {
+	if (!_commandHandler->areChanges())
+		return 1;
+	std::wstring msg = doStrEntry(L"There are unsaved changes. Discard? (q/*):");
+	if (msg.compare(L"q") == 0)
+		return 1;
+	return 0;
 }
 
-void Editor::startBox() {
+void TileEditor::startBox() {
 	_doingBox = true;
 	_boxx = _mx + _cx;
 	_boxy = _my + _cy;
@@ -273,7 +270,7 @@ void Editor::startBox() {
 // TODO: does this explode?
 #undef min
 
-void Editor::stopBox() {
+void TileEditor::stopBox() {
 	if (_doingBox) {
 		int tlx = std::min(_mx + _cx, _boxx);
 		int tly = std::min(_my + _cy, _boxy);
@@ -290,7 +287,7 @@ void Editor::stopBox() {
 }
 	
 
-void Editor::doTools() {
+void TileEditor::doTools() {
 	_input->getMousePos(&_mx, &_my);
 
 	//handle starting and stopping input, as well as vars for box tool
@@ -339,7 +336,7 @@ void Editor::doTools() {
 	}
 }
 
-void Editor::doPicker() {
+void TileEditor::doPicker() {
 	//leave picker mode
 	if (_input->isKeyPressed(TK_SPACE)) {
 		_state = states::direct;
@@ -361,7 +358,7 @@ void Editor::doPicker() {
 	_picker->update(_mx - _px, _my - _py);
 }
 
-std::wstring Editor::doStrEntry(std::wstring msg) {
+std::wstring TileEditor::doStrEntry(std::wstring msg) {
 	wchar_t a[64] = {};
 	terminal_bkcolor(colors::black);
 	terminal_color(colors::white);
@@ -371,7 +368,7 @@ std::wstring Editor::doStrEntry(std::wstring msg) {
 	return std::wstring(a);
 }
 
-void Editor::draw() {
+void TileEditor::draw() {
 	//draw bg
 	drawDirect();
 	//draw any windows
@@ -382,11 +379,9 @@ void Editor::draw() {
 	}
 	//draw cursor
 	//drawCursor();
-	// draw logger
-	_logger->draw();
 }
 
-void Editor::drawDirect() {
+void TileEditor::drawDirect() {
 	//the outline UIBox
 	_outline.draw(-_cx - 1, -_cy - 1);
 
@@ -406,11 +401,11 @@ void Editor::drawDirect() {
 	}
 }
 
-void Editor::drawPicker() {
+void TileEditor::drawPicker() {
 	_picker->draw(_px, _py);
 }
 
-void Editor::drawCursor() {
+void TileEditor::drawCursor() {
 	// cursor drawing code. TODO: abstracting for arbitrary cursor styles
 	//terminal_layer(1);
 	terminal_color(colors::white);
@@ -420,13 +415,13 @@ void Editor::drawCursor() {
 	//terminal_layer(0);
 }
 
-void Editor::drawSingleTile(int x, int y, Tile* tile) {   
+void TileEditor::drawSingleTile(int x, int y, Tile* tile) {
 	terminal_bkcolor(colors::indexed[tile->bgcolor]);
 	terminal_color(colors::indexed[tile->fgcolor]);
 	terminal_put(x, y, tile->character);
 }
 
-bool Editor::storeSingleTile(int x, int y, Tile* tile, int mask) {
+bool TileEditor::storeSingleTile(int x, int y, Tile* tile, int mask) {
 	if (!coordHelper::areValidCoords(x, y, _w, _h))
 		return false;
 	// masking for certain values
@@ -452,13 +447,13 @@ bool Editor::storeSingleTile(int x, int y, Tile* tile, int mask) {
 	return true;
 }
 
-Tile Editor::getTile(int x, int y) {
+Tile TileEditor::getTile(int x, int y) {
 	if (!coordHelper::areValidCoords(x, y, _w, _h))
 		return Tile();
 	return _tiles[x + y * _w];
 }
 
-void Editor::doMMBMove() {
+void TileEditor::doMMBMove() {
 	//set past coords on original MMB press
 	if (_input->isKeyPressed(TK_MOUSE_MIDDLE)) {
 		_fmx = _mx;
