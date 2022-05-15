@@ -1,27 +1,29 @@
 #pragma once
 #include <BearLibTerminal.h>
 namespace colors {
-	const color_t black = 0xff090b0d;
-	const color_t white = 0xfffffefb;
-	const color_t dkgrey = 0xff3c3346;
-	const color_t grey = 0xff515478;
-	const color_t lgrey = 0xffa6b4be;
-	const color_t red = 0xfff71b4e;
-	const color_t skin = 0xfffbe1b6;
-	const color_t parv = 0xffbefe21;
-	const color_t cyan = 0xff4efaf7;
-	const color_t blue = 0xff3845cb;
-	const color_t green = 0xff50e754;
-	const color_t yellow = 0xffffff49;
-	const color_t skinsh = 0xffe59883;
-	const color_t purple = 0xff612ea7;
-	const color_t orange = 0xffff9a3c;
-	const color_t fgreen = 0xff3a8053;
-	const color_t brown = 0xff885c4a;
-	const color_t lblack = 0xff24242c;
+	const color_t black    = 0xff090b0d;
+	const color_t white    = 0xffffffff;
+	const color_t dkgrey   = 0xff42384d;
+	const color_t grey     = 0xff787878;
+	const color_t lgrey    = 0xffe3eac9;
+	const color_t red      = 0xffff0052;
+	const color_t skin     = 0xfffcebcb;
+	const color_t parv     = 0xffbefe21;
+	const color_t cyan     = 0xff19f6f9;
+	const color_t blue     = 0xff2b3ce1;
+	const color_t green    = 0xff3dec49;
+	const color_t yellow   = 0xffffff3b;
+	const color_t skinsh   = 0xffe59883;
+	const color_t magenta  = 0xffff5a9b;
+	const color_t orange   = 0xfffe9317;
+	const color_t fgreen   = 0xff0c6f55;
+	const color_t brown    = 0xff825141;
+	const color_t lblack   = 0xff292625;
+	const color_t dkblue   = 0xff00294c;
+	const color_t maroon   = 0xff791839;
 
-	const int numcolors = 18;
-	const color_t indexed[numcolors] = { black, white, dkgrey, grey, lgrey, red, yellow, parv, cyan, blue, green, skin, skinsh, purple, orange, fgreen, brown, lblack };
+	const int numcolors = 20;
+	const color_t indexed[numcolors] = { black, white, dkgrey, grey, lgrey, red, yellow, parv, cyan, blue, green, skin, skinsh, magenta, orange, fgreen, brown, lblack, dkblue, maroon };
 
 	//const color_t black = 0xff0e1214;
 	//const color_t white = 0xfff6f7f3;
