@@ -4,7 +4,7 @@ Input::Input() {
 	return;
 }
 
-bool Input::doEventInput() {
+void Input::doEventInput() {
 	resetInput();
 	while (terminal_has_input()) {
 		int key = terminal_read();
@@ -24,8 +24,6 @@ bool Input::doEventInput() {
 			handleKeyRelease(key ^ TK_KEY_RELEASED);
 		}
 	}
-
-	return false;
 }
 
 void Input::resetInput() {

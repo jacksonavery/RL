@@ -3,9 +3,14 @@
 #include <string>
 #include <iostream>
 #include <chrono>
+#include <algorithm>
+#include "globals.h"
+#include "colors.h"
+#include "geometric character points.h"
 #include "input.h"
-#include "editor.h"
-//#include "uibox.h"
+#include "handler.h"
+#include "tileEditor.h"
+#include "logger.h"
 
 class Window {
 public:
@@ -15,8 +20,8 @@ private:
 	bool init();
 
 	void gameLoop();
-	//returns 1 if closed
-	int update(int elapsedTime);
+	//returns true
+	bool update(int elapsedTime);
 	void draw();
 
 	std::string _title = "window";
@@ -25,7 +30,9 @@ private:
 
 	bool _closed = false;
 	Input* _input = nullptr;
-	Editor* _handler = nullptr;
-
-	int _ET = 0;
+	Logger* _logger = nullptr;
+	Handler* _handler = nullptr;
+	Handler* _tileEditor = nullptr;
+	Handler* _overEditor = nullptr;
+	Handler* _game = nullptr;
 };

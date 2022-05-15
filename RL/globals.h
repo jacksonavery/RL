@@ -3,6 +3,14 @@
 #include <sstream>
 #include <iomanip>
 
+enum handlerReturns {
+	nothing,
+	close,
+	tileeditor,
+	overeditor,
+	game
+};
+
 namespace globals {
 	const int width = 1920, height = 1080, tileSize = 24;
 	//80*45 atm

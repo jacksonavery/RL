@@ -133,7 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="coordHelper.cpp" />
-    <ClCompile Include="editor.cpp" />
+    <ClCompile Include="tileEditor.cpp" />
     <ClCompile Include="fileDialog.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="logger.cpp" />
@@ -148,10 +148,11 @@
     <ClInclude Include="command.h" />
     <ClInclude Include="commandHandler.h" />
     <ClInclude Include="coordHelper.h" />
-    <ClInclude Include="editor.h" />
+    <ClInclude Include="tileEditor.h" />
     <ClInclude Include="fileDialog.h" />
     <ClInclude Include="geometric character points.h" />
     <ClInclude Include="globals.h" />
+    <ClInclude Include="handler.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="level.h" />
     <ClInclude Include="logger.h" />

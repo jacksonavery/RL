@@ -6,16 +6,18 @@
 #include "colors.h"
 #include "globals.h"
 
+#define LOGGER_TIMEOUT 150
+
 class Logger {
 public:
 	Logger();
 	~Logger();
 
-	void logMessage(std::wstring message, int timeout = 180);
+	void logMessage(std::wstring message);
 	void update();
 	void draw();
 private:
 	std::vector<std::wstring> _messages;
 	int _timer;
-	int maxmsgs = 1;
+	int maxmsgs = 5;
 };

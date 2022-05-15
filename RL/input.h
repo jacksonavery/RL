@@ -13,8 +13,7 @@ public:
 
 	bool anyKeyHeld();
 
-	//return true to quit game
-	bool doEventInput();
+	void doEventInput();
 private:
 	void resetInput();
 	void handleKeyPress(int key);
